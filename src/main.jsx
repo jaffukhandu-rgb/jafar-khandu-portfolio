@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ArrowUpRight, Mail, Menu, X, Code2, Database, Server, Layers3, CheckCircle2, Github, Linkedin } from 'lucide-react';
+import { ArrowUpRight, Mail, Menu, X, Code2, Database, Server, Layers3, CheckCircle2 } from 'lucide-react';
 import './styles.css';
 
 const projects = [
@@ -55,7 +55,7 @@ function App() {
 
         <section id="experience" className="section muted"><div className="container"><div className="section-heading"><span>04</span><div><p className="kicker">EXPERIENCE</p><h2>From requirements<br />to production.</h2></div></div><div className="timeline"><div className="timeline-line" /><article><div className="time-dot" /><div><p className="time-date">CRAVITA TECHNOLOGIES</p><h3>Full-Stack .NET Developer</h3><p>Worked across application development, backend services, databases and web interfaces, translating requirements into practical software and improving features through iterative development.</p></div></article></div><div className="approach"><div><p className="kicker">MY DEVELOPMENT APPROACH</p><h3>Understand → Design → Build → Test → Deploy</h3></div><div className="approach-note"><CheckCircle2 size={18} /><span>Simple architecture. Clear code. Production mindset.</span></div></div></div></section>
 
-        <section id="contact" className="contact container"><p className="kicker">05 · CONTACT</p><h2>Have a project in mind?</h2><p>Let's talk about what you're building, what needs fixing, or what could be improved.</p><a className="btn primary" href="mailto:jafarkhanduwala@gmail.com">Start a conversation <Mail size={18} /></a><div className="socials"><a href="mailto:jafarkhanduwala@gmail.com"><Mail size={18} /> Email</a><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer"><Linkedin size={18} /> LinkedIn</a><a href="https://github.com/jaffukhandu-rgb" target="_blank" rel="noreferrer"><Github size={18} /> GitHub</a></div></section>
+        <section id="contact" className="contact container"><p className="kicker">05 · CONTACT</p><h2>Have a project in mind?</h2><p>Let's talk about what you're building, what needs fixing, or what could be improved.</p><a className="btn primary" href="mailto:jafarkhanduwala@gmail.com">Start a conversation <Mail size={18} /></a><div className="socials"><a href="mailto:jafarkhanduwala@gmail.com"><Mail size={18} /> Email</a><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a><a href="https://github.com/jaffukhandu-rgb" target="_blank" rel="noreferrer">GitHub</a></div></section>
       </main><footer className="footer container"><span>© {new Date().getFullYear()} Jafar Khandu</span><span>Designed & built with React</span></footer>
     </div>
   );
