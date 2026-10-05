@@ -6,7 +6,7 @@ import './styles.css';
 const projects = [
   { title: 'TaskManagement / CodeQueue', label: 'Featured · Full-Stack .NET', description: 'A structured project and task management platform with authentication, assignment workflows, reviews, payment decisions, real-time communication, notifications and automated deadline reminders.', stack: ['ASP.NET Core', 'C#', 'MVC', 'EF Core', 'SQL Server', 'Identity', 'SignalR'], link: 'https://codequeue.ciitstudent.com/' },
   { title: 'Unique Interior', label: 'Production Business Application', description: 'A real-world interior design business application built around a modern customer experience, content management and cloud-hosted media workflow.', stack: ['ASP.NET Core', 'MongoDB', 'Cloudinary', 'C#', 'Nginx'], link: 'https://uniqueinteriors.shop/' },
-  { title: 'Melange Parfum', label: 'Modern E-commerce', description: 'A modern full-stack perfume commerce platform with authentication, payments, media handling, database integration and a responsive product experience.', stack: ['Next.js', 'React', 'TypeScript', 'MongoDB', 'Cloudinary', 'Razorpay'], link: 'https://perfumewebsite-lt72tgwqm-jk-6157.vercel.app/collection' }
+  { title: 'Melange Parfum', label: 'Modern E-commerce', description: 'A modern full-stack perfume commerce platform with authentication, payments, media handling, database integration and a responsive product experience.', stack: ['Next.js', 'React', 'TypeScript', 'MongoDB', 'Cloudinary', 'Razorpay'], link: 'https://perfumewebsite-lt72tgwqm-jk-6157.vercel.app' }
 ];
 
 const skills = [
