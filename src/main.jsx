@@ -20,13 +20,13 @@ function App() {
   const [open, setOpen] = useState(false);
   const nav = ['Home', 'About', 'Skills', 'Projects', 'Experience', 'Contact'];
   const go = (id) => { document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: 'smooth' }); setOpen(false); };
-  const resumeRequest = 'mailto:jafarkhanduwala@gmail.com?subject=Resume%20Request';
+  const resumeUrl = '/resume.html';
 
   return (
     <div className="site-shell">
       <header className="nav-wrap"><nav className="nav container">
         <button className="brand" onClick={() => go('home')} aria-label="Go to home"><span className="brand-mark">JK</span><span>Jafar Khandu</span></button>
-        <div className={`nav-links ${open ? 'open' : ''}`}>{nav.map(item => <button key={item} onClick={() => go(item)}>{item}</button>)}<a className="nav-resume" href={resumeRequest}>Resume</a></div>
+        <div className={`nav-links ${open ? 'open' : ''}`}>{nav.map(item => <button key={item} onClick={() => go(item)}>{item}</button>)}<a className="nav-resume" href={resumeUrl} target="_blank" rel="noreferrer">Resume</a></div>
         <button className="menu-btn" onClick={() => setOpen(!open)} aria-label="Toggle navigation">{open ? <X /> : <Menu />}</button>
       </nav></header>
 
@@ -39,7 +39,7 @@ function App() {
               <h2>I'M <strong>JAFAR KHANDU</strong></h2>
               <p className="type-line"><span>Full-Stack .NET Developer</span><i>|</i></p>
               <p className="home-intro">I build reliable web applications from backend logic and APIs to responsive interfaces and production deployments.</p>
-              <div className="hero-actions"><button className="btn primary" onClick={() => go('projects')}>View My Work <ArrowUpRight size={18} /></button><a className="btn secondary" href={resumeRequest}>Request Resume</a></div>
+              <div className="hero-actions"><button className="btn primary" onClick={() => go('projects')}>View My Work <ArrowUpRight size={18} /></button><a className="btn secondary" href={resumeUrl} target="_blank" rel="noreferrer">View Resume</a></div>
             </div>
             <div className="home-visual" aria-label="Jafar Khandu developer profile">
               <div className="visual-glow" />
@@ -62,7 +62,7 @@ function App() {
 
         <section id="experience" className="section muted"><div className="container"><div className="section-heading"><span>04</span><div><p className="kicker">EXPERIENCE</p><h2>From requirements<br />to production.</h2></div></div><div className="timeline"><div className="timeline-line" /><article><div className="time-dot" /><div><p className="time-date">CRAVITA TECHNOLOGIES</p><h3>Full-Stack .NET Developer</h3><p>Worked across application development, backend services, databases and web interfaces, translating requirements into practical software and improving features through iterative development.</p></div></article></div><div className="approach"><div><p className="kicker">MY DEVELOPMENT APPROACH</p><h3>Understand → Design → Build → Test → Deploy</h3></div><div className="approach-note"><CheckCircle2 size={18} /><span>Simple architecture. Clear code. Production mindset.</span></div></div></div></section>
 
-        <section id="contact" className="contact container"><p className="kicker">05 · CONTACT</p><h2>Have a project in mind?</h2><p>Let's talk about what you're building, what needs fixing, or what could be improved.</p><a className="btn primary" href="mailto:jafarkhanduwala@gmail.com">Start a conversation <Mail size={18} /></a><div className="socials"><a href="mailto:jafarkhanduwala@gmail.com"><Mail size={18} /> Email</a><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a><a href="https://github.com/jaffukhandu-rgb" target="_blank" rel="noreferrer">GitHub</a></div></section>
+        <section id="contact" className="contact container"><p className="kicker">05 · CONTACT</p><h2>Have a project in mind?</h2><p>Let's talk about what you're building, what needs fixing, or what could be improved.</p><a className="btn primary" href="mailto:jafarkhanduwala@gmail.com">Start a conversation <Mail size={18} /></a><div className="socials"><a href="mailto:jafarkhanduwala@gmail.com"><Mail size={18} /> Email</a><a href="https://www.linkedin.com/in/jafar-khandu-7ba828427" target="_blank" rel="noreferrer">LinkedIn</a><a href="https://github.com/jaffukhandu-rgb" target="_blank" rel="noreferrer">GitHub</a></div></section>
       </main><footer className="footer container"><span>© {new Date().getFullYear()} Jafar Khandu</span><span>Designed & built with React</span></footer>
     </div>
   );
