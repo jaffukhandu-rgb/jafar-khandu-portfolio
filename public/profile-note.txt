@@ -1,0 +1,1 @@
+Temporary note; binary replacement will be handled through Git data API.
