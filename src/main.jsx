@@ -42,7 +42,7 @@ function App() {
               <div className="hero-actions"><button className="btn primary" onClick={() => go('projects')}>View My Work <ArrowUpRight size={18} /></button><a className="btn secondary" href={resumeRequest}>Request Resume</a></div>
             </div>
             <div className="home-visual" aria-label="Jafar Khandu developer profile">
-              <div className="visual-glow" /><div className="developer-art"><div className="screen"><span>&lt;/&gt;</span><b>build()</b><small>ship();</small></div><div className="person-head">JK</div><div className="person-body" /><img className="profile-photo" src="/profile.jpg" alt="Jafar Khandu in a formal suit" /><div className="floating-card card-one">ASP.NET Core</div><div className="floating-card card-two">React</div><div className="floating-card card-three">MongoDB</div></div>
+              <div className="visual-glow" /><div className="developer-art"><div className="screen"><span>&lt;/&gt;</span><b>build()</b><small>ship();</small></div><div className="person-head">JK</div><div className="person-body" /><img className="profile-photo" src="/profile.jpg" alt="Jafar Khandu in a formal suit" onError={(event) => { event.currentTarget.style.display = 'none'; }} /><div className="floating-card card-one">ASP.NET Core</div><div className="floating-card card-two">React</div><div className="floating-card card-three">MongoDB</div></div>
             </div>
           </div>
         </section>
