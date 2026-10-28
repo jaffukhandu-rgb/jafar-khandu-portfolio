@@ -1,0 +1,51 @@
+/* Scroll-story project interaction: the project copy stays anchored while each project section moves through it. */
+
+@media (min-width: 981px) {
+  .projects-editorial {
+    gap: 0;
+  }
+
+  .editorial-project,
+  .editorial-project:nth-child(even) {
+    min-height: 92vh;
+    grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr);
+    align-items: start;
+    gap: clamp(45px, 8vw, 115px);
+  }
+
+  .editorial-project:nth-child(even) .project-visual {
+    order: 0;
+  }
+
+  .editorial-project:nth-child(even) .project-copy {
+    order: 0;
+  }
+
+  .editorial-project .project-visual {
+    align-self: start;
+    margin-top: 3vh;
+  }
+
+  .editorial-project .project-copy {
+    position: sticky;
+    top: 132px;
+    align-self: start;
+    min-height: 475px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 20px;
+  }
+}
+
+@media (max-width: 980px) {
+  .projects-editorial {
+    gap: 75px;
+  }
+
+  .editorial-project .project-copy {
+    position: static;
+    min-height: 0;
+    padding: 0;
+  }
+}
