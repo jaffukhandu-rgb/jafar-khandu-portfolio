@@ -40,6 +40,7 @@ const skills = [
 
 function App() {
   const [open, setOpen] = useState(false);
+  const [activeProject, setActiveProject] = useState(0);
   const nav = ['Work', 'About', 'Experience', 'Contact'];
   const resumeUrl = '/resume.html';
 
@@ -56,6 +57,20 @@ function App() {
     );
     revealItems.forEach((item) => observer.observe(item));
 
+    const projectItems = document.querySelectorAll('.project-story-item');
+    const projectObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number(entry.target.dataset.projectIndex);
+            if (Number.isInteger(index)) setActiveProject(index);
+          }
+        });
+      },
+      { rootMargin: '-42% 0px -42% 0px', threshold: 0 }
+    );
+    projectItems.forEach((item) => projectObserver.observe(item));
+
     const onPointerMove = (event) => {
       document.documentElement.style.setProperty('--mx', `${event.clientX}px`);
       document.documentElement.style.setProperty('--my', `${event.clientY}px`);
@@ -64,9 +79,12 @@ function App() {
 
     return () => {
       observer.disconnect();
+      projectObserver.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
     };
   }, []);
+
+  const active = projects[activeProject];
 
   return (
     <div className="site-shell">
@@ -135,27 +153,34 @@ function App() {
             </div>
           </div>
 
-          <div className="projects-editorial">
-            {projects.map((project, index) => (
-              <article className={`editorial-project reveal ${index === 0 ? 'project-featured' : ''}`} key={project.title}>
-                <div className="project-visual" aria-hidden="true">
+          <div className="projects-story">
+            <div className="project-stage-wrap">
+              <div className="project-stage" aria-live="polite">
+                <div className="project-stage-inner">
                   <div className="visual-grid" />
                   <div className="visual-window">
                     <span className="window-dot" /><span className="window-dot" /><span className="window-dot" />
                     <div className="window-lines"><i /><i /><i /><i /></div>
-                    <strong>{project.number}</strong>
+                    <strong>{active.number}</strong>
                   </div>
-                  <span className="visual-label">{project.category}</span>
+                  <span className="visual-label">{active.category}</span>
                 </div>
-                <div className="project-copy">
-                  <div className="project-meta"><span>{project.number}</span><span>{project.category}</span></div>
-                  <h3>{project.title}</h3>
-                  <p>{project.description}</p>
-                  <div className="project-tags">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
-                  <a className="case-link" href={project.link} target="_blank" rel="noreferrer">Explore project <ArrowUpRight size={17} /></a>
-                </div>
-              </article>
-            ))}
+              </div>
+            </div>
+
+            <div className="project-story-copy">
+              {projects.map((project, index) => (
+                <article className="project-story-item" data-project-index={index} key={project.title}>
+                  <div className="project-copy">
+                    <div className="project-meta"><span>{project.number}</span><span>{project.category}</span></div>
+                    <h3>{project.title}</h3>
+                    <p>{project.description}</p>
+                    <div className="project-tags">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
+                    <a className="case-link" href={project.link} target="_blank" rel="noreferrer">Explore project <ArrowUpRight size={17} /></a>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
         </section>
 
