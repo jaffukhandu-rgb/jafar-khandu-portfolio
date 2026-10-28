@@ -3,12 +3,7 @@
   --cinematic-line: rgba(201, 188, 236, .16);
 }
 
-/*
- * Cinematic layer — performance-first.
- * Scroll position is driven by the existing React requestAnimationFrame loop.
- * Do not use CSS view-timeline here: it duplicates the scroll work and can
- * cause frame drops on mid-range laptops/mobile browsers.
- */
+/* Performance-first cinematic layer. The hero is driven by the existing RAF loop. */
 .hero {
   min-height: 125vh;
   overflow: hidden;
@@ -36,7 +31,6 @@
     radial-gradient(circle at 17% 30%, rgba(128, 104, 208, .06), transparent 16%),
     radial-gradient(circle at 83% 68%, rgba(105, 83, 177, .055), transparent 18%);
   filter: blur(26px);
-  transform: translate3d(0, 0, 0) scale(1.08);
   animation: atmosphereBreath 8s ease-in-out infinite;
 }
 
@@ -79,7 +73,6 @@
   box-shadow: 0 24px 70px rgba(0, 0, 0, .18);
 }
 
-/* Floating scene props: visual depth without expensive backdrop-filter. */
 .hero-inner::before,
 .hero-inner::after {
   content: '';
@@ -122,10 +115,7 @@
   animation-delay: -2.5s;
 }
 
-.hero-stats {
-  position: relative;
-}
-
+.hero-stats { position: relative; }
 .hero-stats::before {
   content: '';
   position: absolute;
@@ -139,15 +129,22 @@
   animation: pulseDot 2.8s ease-in-out infinite;
 }
 
-/* Project scene: keep the stage visually alive, but never animate layout. */
-.projects-story,
+/* This is the key reference-inspired motion: each project copy enters like a
+   physical card coming toward the viewer, then settles into the reading plane.
+   Only the three project articles use a scroll timeline, avoiding a page-wide
+   animation graph. Browsers without scroll-timeline simply keep the normal layout. */
+@supports (animation-timeline: view()) {
+  .project-story-item {
+    transform-origin: 50% 80%;
+    animation: projectComeOut linear both;
+    animation-timeline: view(block);
+    animation-range: entry 5% cover 38%;
+  }
+}
+
 .project-stage,
 .project-stage-inner {
   transform-style: preserve-3d;
-}
-
-.project-stage {
-  will-change: transform;
 }
 
 .project-stage-inner {
@@ -179,11 +176,29 @@
 }
 
 .project-story-item .project-copy {
-  transition: opacity .45s ease, transform .55s cubic-bezier(.2,.7,.2,1);
+  transition: opacity .35s ease, transform .45s cubic-bezier(.2,.7,.2,1);
 }
 
 .project-story-item:not(:has(+ .project-story-item)) {
   padding-bottom: 18vh;
+}
+
+@keyframes projectComeOut {
+  0% {
+    opacity: .08;
+    transform: translate3d(0, 90px, -160px) scale(.76) rotateX(8deg);
+    filter: blur(1px);
+  }
+  48% {
+    opacity: .72;
+    transform: translate3d(0, 20px, -40px) scale(.92) rotateX(2deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotateX(0deg);
+    filter: none;
+  }
 }
 
 @keyframes atmosphereBreath {
@@ -232,7 +247,8 @@
   .hero-inner::before,
   .hero-inner::after,
   .project-stage-inner,
-  .project-stage-inner::before {
+  .project-stage-inner::before,
+  .project-story-item {
     animation: none !important;
   }
 }
