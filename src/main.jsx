@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ArrowUpRight, Download, Mail, Menu, X, Github, Linkedin, Code2, Database, Server, Layers3, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, Download, Mail, Menu, X, Code2, Database, Server, Layers3, CheckCircle2 } from 'lucide-react';
 import './styles.css';
 
 const projects = [
@@ -217,8 +217,8 @@ function App() {
           <a className="pill-button filled contact-button" href="mailto:jaffarkhanduwala@gmail.com">Start a conversation <Mail size={17} /></a>
           <div className="socials">
             <a href="mailto:jaffarkhanduwala@gmail.com"><Mail size={16} /> Email</a>
-            <a href="https://www.linkedin.com/in/jafar-khandu-7ba828427" target="_blank" rel="noreferrer"><Linkedin size={16} /> LinkedIn</a>
-            <a href="https://github.com/jaffukhandu-rgb" target="_blank" rel="noreferrer"><Github size={16} /> GitHub</a>
+            <a href="https://www.linkedin.com/in/jafar-khandu-7ba828427" target="_blank" rel="noreferrer"><span className="social-mark" aria-hidden="true">in</span> LinkedIn</a>
+            <a href="https://github.com/jaffukhandu-rgb" target="_blank" rel="noreferrer"><span className="social-mark" aria-hidden="true">GH</span> GitHub</a>
           </div>
         </section>
       </main>
