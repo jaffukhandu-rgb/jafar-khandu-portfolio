@@ -252,3 +252,123 @@
     animation: none !important;
   }
 }
+
+/* Hero identity animation — reference-inspired, CSS-only and dependency-free. */
+.hero-portrait {
+  width: clamp(190px, 20vw, 260px);
+  height: 108px;
+  margin-bottom: 28px;
+  display: grid;
+  place-items: center;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  overflow: visible;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(183, 162, 255, .12), transparent 34%),
+    radial-gradient(circle at 20% 50%, rgba(132, 105, 208, .06), transparent 24%),
+    radial-gradient(circle at 80% 50%, rgba(132, 105, 208, .06), transparent 24%);
+}
+
+.hero-portrait.reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.hero-portrait img,
+.hero-portrait .portrait-orbit {
+  display: none;
+}
+
+.hero-portrait::before {
+  content: 'JK';
+  position: absolute;
+  inset: -8px 0 10px;
+  display: grid;
+  place-items: center;
+  color: #f1ecf8;
+  font: 600 clamp(76px, 8.5vw, 112px)/.78 'Cormorant Garamond', serif;
+  letter-spacing: -.075em;
+  text-shadow:
+    0 0 24px rgba(183, 162, 255, .16),
+    0 18px 55px rgba(0, 0, 0, .42);
+  transform-origin: 50% 70%;
+  transform-style: preserve-3d;
+  animation: heroIdentityMark 1.45s cubic-bezier(.16,.78,.2,1) both;
+}
+
+.hero-portrait::after {
+  content: 'JAFAR KHANDU';
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: max-content;
+  transform: translateX(-50%);
+  color: rgba(204, 194, 225, .72);
+  font: 600 9px/1 'DM Sans', sans-serif;
+  letter-spacing: .42em;
+  white-space: nowrap;
+  animation: heroIdentityName 1.1s .42s cubic-bezier(.2,.75,.2,1) both;
+}
+
+@keyframes heroIdentityMark {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 32px, -420px) rotateX(38deg) rotateY(-9deg) scale(.18);
+    filter: blur(12px);
+  }
+  34% {
+    opacity: .38;
+    transform: translate3d(0, 10px, -170px) rotateX(16deg) rotateY(-4deg) scale(.58);
+    filter: blur(4px);
+  }
+  72% {
+    opacity: 1;
+    transform: translate3d(0, -2px, 12px) rotateX(-2deg) rotateY(1deg) scale(1.04);
+    filter: blur(0);
+  }
+  100% {
+    opacity: .94;
+    transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1);
+    filter: none;
+  }
+}
+
+@keyframes heroIdentityName {
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    transform: translate(-50%, 12px);
+    letter-spacing: .8em;
+  }
+  100% {
+    opacity: .82;
+    clip-path: inset(0 0 0 0);
+    transform: translate(-50%, 0);
+    letter-spacing: .42em;
+  }
+}
+
+@media (max-width: 700px) {
+  .hero-portrait {
+    width: 180px;
+    height: 88px;
+    margin-bottom: 22px;
+  }
+
+  .hero-portrait::before {
+    font-size: 70px;
+  }
+
+  .hero-portrait::after {
+    font-size: 7px;
+    letter-spacing: .3em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-portrait::before,
+  .hero-portrait::after {
+    animation: none;
+  }
+}
