@@ -162,6 +162,7 @@ const initParticleHero = () => {
     state.scrollRaf = 0;
     state.progress = clamp((window.scrollY - state.heroTop) / Math.max(state.heroHeight * 0.82, 1), 0, 1.15);
     portrait.style.setProperty('--particle-progress', state.progress.toFixed(4));
+    portrait.style.setProperty('--particle-y', `${(-42 * state.progress).toFixed(2)}px`);
   };
 
   const onScroll = () => {
