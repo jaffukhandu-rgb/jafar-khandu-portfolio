@@ -129,10 +129,6 @@
   animation: pulseDot 2.8s ease-in-out infinite;
 }
 
-/* This is the key reference-inspired motion: each project copy enters like a
-   physical card coming toward the viewer, then settles into the reading plane.
-   Only the three project articles use a scroll timeline, avoiding a page-wide
-   animation graph. Browsers without scroll-timeline simply keep the normal layout. */
 @supports (animation-timeline: view()) {
   .project-story-item {
     transform-origin: 50% 80%;
@@ -253,122 +249,150 @@
   }
 }
 
-/* Hero identity animation — reference-inspired, CSS-only and dependency-free. */
-.hero-portrait {
-  width: clamp(190px, 20vw, 260px);
-  height: 108px;
-  margin-bottom: 28px;
+/* Cinematic particle portrait hero */
+.hero-portrait.particle-portrait-shell {
+  position: relative;
+  width: min(100%, 1100px);
+  height: clamp(390px, 58vh, 620px);
+  margin: -4px auto 10px;
   display: grid;
   place-items: center;
-  perspective: 900px;
-  transform-style: preserve-3d;
   overflow: visible;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(183, 162, 255, .12), transparent 34%),
-    radial-gradient(circle at 20% 50%, rgba(132, 105, 208, .06), transparent 24%),
-    radial-gradient(circle at 80% 50%, rgba(132, 105, 208, .06), transparent 24%);
-}
-
-.hero-portrait.reveal {
+  isolation: isolate;
+  background: none;
+  transform-style: preserve-3d;
   opacity: 1;
-  transform: none;
+  transform: translate3d(0, 0, 0);
   transition: none;
 }
 
-.hero-portrait img,
-.hero-portrait .portrait-orbit {
-  display: none;
+.hero-portrait.particle-portrait-shell::before,
+.hero-portrait.particle-portrait-shell::after {
+  content: none !important;
 }
 
-.hero-portrait::before {
-  content: 'JK';
+.particle-portrait-canvas {
   position: absolute;
-  inset: -8px 0 10px;
-  display: grid;
-  place-items: center;
-  color: #f1ecf8;
-  font: 600 clamp(76px, 8.5vw, 112px)/.78 'Cormorant Garamond', serif;
-  letter-spacing: -.075em;
-  text-shadow:
-    0 0 24px rgba(183, 162, 255, .16),
-    0 18px 55px rgba(0, 0, 0, .42);
-  transform-origin: 50% 70%;
-  transform-style: preserve-3d;
-  animation: heroIdentityMark 1.45s cubic-bezier(.16,.78,.2,1) both;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  filter: drop-shadow(0 18px 45px rgba(0, 0, 0, .35));
+  transform: translate3d(0, var(--particle-y, 0px), 0) scale(.985);
+  transform-origin: 50% 54%;
+  will-change: transform;
 }
 
-.hero-portrait::after {
-  content: 'JAFAR KHANDU';
+.hero-portfolio-word {
   position: absolute;
+  z-index: 1;
   left: 50%;
-  bottom: -2px;
-  width: max-content;
-  transform: translateX(-50%);
-  color: rgba(204, 194, 225, .72);
-  font: 600 9px/1 'DM Sans', sans-serif;
-  letter-spacing: .42em;
+  top: 50%;
+  width: 100%;
+  transform: translate(-50%, -44%);
+  color: rgba(239, 236, 246, .94);
+  font: 800 clamp(92px, 12.8vw, 220px)/.78 Arial, Helvetica, sans-serif;
+  letter-spacing: -.075em;
+  text-align: center;
   white-space: nowrap;
-  animation: heroIdentityName 1.1s .42s cubic-bezier(.2,.75,.2,1) both;
+  user-select: none;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  text-shadow: 0 10px 55px rgba(0, 0, 0, .4);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
 }
 
-@keyframes heroIdentityMark {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 32px, -420px) rotateX(38deg) rotateY(-9deg) scale(.18);
-    filter: blur(12px);
+.hero-particle-role {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: 13%;
+  transform: translateX(-50%);
+  color: rgba(240, 236, 248, .78);
+  font: 600 10px/1 'DM Sans', sans-serif;
+  letter-spacing: .32em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.hero-eyebrow-secondary {
+  opacity: .45;
+  transform: translateY(-4px) scale(.82);
+}
+
+.hero-title-secondary {
+  max-width: 900px;
+  margin-top: -8px;
+  font-size: clamp(38px, 5.3vw, 78px);
+  line-height: .95;
+}
+
+.hero-title-secondary em {
+  opacity: .72;
+}
+
+.hero-portrait.particle-portrait-shell + .eyebrow {
+  margin-top: -4px;
+}
+
+.hero .floating-note {
+  opacity: .28;
+  filter: blur(.15px);
+}
+
+@media (max-width: 900px) {
+  .hero-portrait.particle-portrait-shell {
+    height: clamp(330px, 52vh, 480px);
+    margin-top: 4px;
   }
-  34% {
-    opacity: .38;
-    transform: translate3d(0, 10px, -170px) rotateX(16deg) rotateY(-4deg) scale(.58);
-    filter: blur(4px);
+
+  .hero-portfolio-word {
+    font-size: clamp(70px, 13vw, 125px);
   }
-  72% {
-    opacity: 1;
-    transform: translate3d(0, -2px, 12px) rotateX(-2deg) rotateY(1deg) scale(1.04);
-    filter: blur(0);
-  }
-  100% {
-    opacity: .94;
-    transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1);
-    filter: none;
+
+  .hero-particle-role {
+    bottom: 9%;
+    font-size: 8px;
+    letter-spacing: .24em;
   }
 }
 
-@keyframes heroIdentityName {
-  0% {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
-    transform: translate(-50%, 12px);
-    letter-spacing: .8em;
-  }
-  100% {
-    opacity: .82;
-    clip-path: inset(0 0 0 0);
-    transform: translate(-50%, 0);
-    letter-spacing: .42em;
-  }
-}
-
-@media (max-width: 700px) {
-  .hero-portrait {
-    width: 180px;
-    height: 88px;
-    margin-bottom: 22px;
+@media (max-width: 640px) {
+  .hero-portrait.particle-portrait-shell {
+    height: 330px;
+    margin-bottom: 2px;
   }
 
-  .hero-portrait::before {
-    font-size: 70px;
+  .hero-portfolio-word {
+    font-size: clamp(54px, 15vw, 92px);
+    letter-spacing: -.09em;
   }
 
-  .hero-portrait::after {
+  .hero-particle-role {
+    bottom: 7%;
     font-size: 7px;
-    letter-spacing: .3em;
+    letter-spacing: .18em;
+  }
+
+  .hero-title-secondary {
+    font-size: clamp(32px, 9.5vw, 48px);
+  }
+
+  .hero-eyebrow-secondary {
+    display: none;
+  }
+
+  .hero .floating-note {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-portrait::before,
-  .hero-portrait::after {
-    animation: none;
+  .particle-portrait-canvas,
+  .hero-portfolio-word {
+    transform: none;
   }
 }
