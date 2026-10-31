@@ -5,7 +5,7 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
 
 const IMAGE_SRC = '/profile.jpg';
-const INTRO_DURATION = 6.1;
+const INTRO_DURATION = 9;
 const TEXT_PARTICLES = 720;
 const FACE_PARTICLES = 760;
 
@@ -181,21 +181,21 @@ export default function ParticlePortrait() {
       context.clearRect(0, 0, width, height);
       context.fillStyle = '#fff';
 
-      if (progress < 0.16) {
-        moveGroup(textParticles, bangTargets, progress / 0.16, 90, 0.11);
-        moveGroup(faceParticles, faceTargets, 0, 240, 0.025);
-      } else if (progress < 0.44) {
-        moveGroup(textParticles, textTargets, (progress - 0.16) / 0.28, 150, 0.12);
-        moveGroup(faceParticles, faceTargets, 0, 190, 0.03);
-      } else if (progress < 0.63) {
-        moveGroup(textParticles, textTargets, 1, 0, 0.12);
-        moveGroup(faceParticles, faceTargets, 0, 150, 0.045);
-      } else if (progress < 0.9) {
-        moveGroup(textParticles, textTargets, 1, 0, 0.1);
-        moveGroup(faceParticles, faceTargets, (progress - 0.63) / 0.27, 100, 0.11);
+      if (progress < 0.14) {
+        moveGroup(textParticles, bangTargets, progress / 0.14, 110, 0.12);
+        moveGroup(faceParticles, faceTargets, 0, 280, 0.02);
+      } else if (progress < 0.42) {
+        moveGroup(textParticles, textTargets, (progress - 0.14) / 0.28, 170, 0.12);
+        moveGroup(faceParticles, faceTargets, 0, 220, 0.025);
+      } else if (progress < 0.66) {
+        moveGroup(textParticles, textTargets, 1, 0, 0.11);
+        moveGroup(faceParticles, faceTargets, 0, 170, 0.04);
+      } else if (progress < 0.92) {
+        moveGroup(textParticles, textTargets, 1, 0, 0.09);
+        moveGroup(faceParticles, faceTargets, (progress - 0.66) / 0.26, 120, 0.11);
       } else {
-        moveGroup(textParticles, textTargets, 1, 0, 0.08);
-        moveGroup(faceParticles, faceTargets, 1, 0, 0.08);
+        moveGroup(textParticles, textTargets, 1, 0, 0.075);
+        moveGroup(faceParticles, faceTargets, 1, 0, 0.075);
       }
 
       context.globalAlpha = 1;
