@@ -4,6 +4,7 @@ const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
 
 const IMAGE_SRC = '/profile-cutout.png';
+const FALLBACK_SRC = '/profile.jpg';
 const DESKTOP_GAP = 5;
 const MOBILE_GAP = 7;
 const DESKTOP_MAX_PARTICLES = 12000;
@@ -30,6 +31,7 @@ export default function ParticlePortrait() {
     let frameId = 0;
     let resizeTimer = 0;
     let image = null;
+    let fallbackImage = null;
     let particles = [];
     let width = 1;
     let height = 1;
@@ -39,6 +41,7 @@ export default function ParticlePortrait() {
     let mouseY = 0;
     let mouseActive = false;
     let imageReady = false;
+    let usingFallback = false;
 
     const setIntroState = (state) => {
       shell.dataset.introState = state;
@@ -64,11 +67,11 @@ export default function ParticlePortrait() {
       canvas.style.height = `${height}px`;
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      if (imageReady) buildParticles();
+      if (imageReady && !usingFallback) buildParticles();
     };
 
     const buildParticles = () => {
-      if (!image) return;
+      if (!image || usingFallback) return;
 
       const { mobile, gap, maxParticles } = getConfig();
       const sourceWidth = image.naturalWidth || image.width;
@@ -109,7 +112,8 @@ export default function ParticlePortrait() {
           const g = pixels[pixelIndex + 1] / 255;
           const b = pixels[pixelIndex + 2] / 255;
           const rawLum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-          const lum = clamp(Math.pow((rawLum - 0.05) * 1.4, 0.7), 0, 1);
+          const transformedLum = Math.max((rawLum - 0.05) * 1.4, 0);
+          const lum = clamp(Math.pow(transformedLum, 0.7), 0, 1);
           if (lum < 0.06) continue;
 
           const sourceX = x / sampleScale;
@@ -156,7 +160,32 @@ export default function ParticlePortrait() {
       context.fill();
     };
 
+    const drawFallback = () => {
+      if (!fallbackImage?.complete || !fallbackImage.naturalWidth) return;
+
+      context.clearRect(0, 0, width, height);
+      context.save();
+      context.globalAlpha = 1;
+
+      const mobile = mobileQuery.matches;
+      const size = Math.min(width * (mobile ? 0.68 : 0.42), height * (mobile ? 0.5 : 0.62), 520);
+      const x = (width - size) / 2;
+      const y = Math.max(18, height - size - (mobile ? 24 : 42));
+
+      context.beginPath();
+      context.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2);
+      context.clip();
+      context.drawImage(fallbackImage, x, y, size, size);
+      context.restore();
+      setIntroState('complete');
+    };
+
     const drawFinal = () => {
+      if (usingFallback) {
+        drawFallback();
+        return;
+      }
+
       context.clearRect(0, 0, width, height);
       context.fillStyle = '#ffffff';
       context.globalAlpha = 1;
@@ -172,6 +201,11 @@ export default function ParticlePortrait() {
     };
 
     const render = (now) => {
+      if (usingFallback) {
+        drawFallback();
+        return;
+      }
+
       if (reduceMotionQuery.matches) {
         drawFinal();
         return;
@@ -239,7 +273,8 @@ export default function ParticlePortrait() {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
         resizeCanvas();
-        if (reduceMotionQuery.matches) drawFinal();
+        if (usingFallback) drawFallback();
+        else if (reduceMotionQuery.matches) drawFinal();
       }, 100);
     };
 
@@ -255,10 +290,18 @@ export default function ParticlePortrait() {
       }
     };
 
+    fallbackImage = new Image();
+    fallbackImage.decoding = 'async';
+    fallbackImage.onload = () => {
+      if (!imageReady) return;
+      drawFallback();
+    };
+
     image = new Image();
     image.decoding = 'async';
     image.onload = () => {
       imageReady = true;
+      usingFallback = false;
       resizeCanvas();
       if (reduceMotionQuery.matches) {
         drawFinal();
@@ -270,7 +313,10 @@ export default function ParticlePortrait() {
       frameId = window.requestAnimationFrame(render);
     };
     image.onerror = () => {
-      setIntroState('error');
+      usingFallback = true;
+      particles = [];
+      setIntroState('loading');
+      fallbackImage.src = FALLBACK_SRC;
     };
     image.src = IMAGE_SRC;
 
