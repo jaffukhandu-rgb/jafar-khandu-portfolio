@@ -6,7 +6,15 @@ const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
 
 const IMAGE_SRC = '/profile.jpg';
 const INTRO_DURATION = 6.1;
-const PARTICLE_COUNT = 1100;
+const TEXT_PARTICLES = 720;
+const FACE_PARTICLES = 760;
+
+const createParticleGroup = (count, width, height) => Array.from({ length: count }, () => ({
+  x: width / 2 + (Math.random() - 0.5) * width * 0.9,
+  y: height / 2 + (Math.random() - 0.5) * height * 1.4,
+  radius: 0.7 + Math.random() * 1.1,
+  seed: Math.random() * Math.PI * 2
+}));
 
 export default function ParticlePortrait() {
   const introRef = useRef(null);
@@ -30,13 +38,15 @@ export default function ParticlePortrait() {
     let height = 1;
     let dpr = 1;
     let startedAt = performance.now();
+    let bangTargets = [];
     let textTargets = [];
     let faceTargets = [];
-    let particles = [];
+    let textParticles = [];
+    let faceParticles = [];
 
     const createTextTargets = (text) => {
       const targetWidth = Math.min(width * 0.82, mobile.matches ? 330 : 720);
-      const targetHeight = mobile.matches ? 110 : 180;
+      const targetHeight = mobile.matches ? 100 : 150;
       const offscreen = document.createElement('canvas');
       offscreen.width = Math.max(1, Math.round(targetWidth));
       offscreen.height = targetHeight;
@@ -47,8 +57,8 @@ export default function ParticlePortrait() {
       offscreenContext.fillStyle = '#fff';
       offscreenContext.textAlign = 'center';
       offscreenContext.textBaseline = 'middle';
-      offscreenContext.font = `900 ${mobile.matches ? 52 : 112}px Arial, sans-serif`;
-      offscreenContext.fillText(text, offscreen.width / 2, offscreen.height / 2 + 4);
+      offscreenContext.font = `900 ${mobile.matches ? 50 : 104}px Arial, sans-serif`;
+      offscreenContext.fillText(text, offscreen.width / 2, offscreen.height / 2 + 2);
 
       const pixels = offscreenContext.getImageData(0, 0, offscreen.width, offscreen.height).data;
       const step = mobile.matches ? 4 : 5;
@@ -60,7 +70,7 @@ export default function ParticlePortrait() {
           if (alpha < 100) continue;
           targets.push({
             x: width / 2 - offscreen.width / 2 + x,
-            y: height * 0.47 - offscreen.height / 2 + y
+            y: height * 0.64 - offscreen.height / 2 + y
           });
         }
       }
@@ -71,7 +81,7 @@ export default function ParticlePortrait() {
     const createFaceTargets = () => {
       if (!image) return [];
 
-      const targetSize = Math.min(width * 0.72, mobile.matches ? 210 : 330);
+      const targetSize = Math.min(width * 0.48, mobile.matches ? 165 : 250);
       const sampleSize = Math.max(80, Math.round(targetSize));
       const offscreen = document.createElement('canvas');
       offscreen.width = sampleSize;
@@ -87,7 +97,7 @@ export default function ParticlePortrait() {
       const drawWidth = sourceWidth * scale;
       const drawHeight = sourceHeight * scale;
       const drawX = (sampleSize - drawWidth) / 2;
-      const drawY = (sampleSize - drawHeight) * 0.28;
+      const drawY = (sampleSize - drawHeight) * 0.16;
 
       offscreenContext.clearRect(0, 0, sampleSize, sampleSize);
       offscreenContext.drawImage(image, drawX, drawY, drawWidth, drawHeight);
@@ -109,30 +119,18 @@ export default function ParticlePortrait() {
           const saturation = Math.max(r, g, b) - Math.min(r, g, b);
           const background = luminance > 0.92 && saturation < 0.1;
 
-          if (background && ny < 0.15) continue;
-          if (luminance > 0.975 && ny < 0.35) continue;
+          if (background && ny < 0.2) continue;
+          if (luminance > 0.975 && ny < 0.38) continue;
 
           targets.push({
             x: width / 2 - sampleSize / 2 + x,
-            y: height * 0.49 - sampleSize / 2 + y,
-            alpha: clamp(0.25 + (1 - luminance) * 0.9, 0.28, 1)
+            y: height * 0.37 - sampleSize / 2 + y,
+            alpha: clamp(0.28 + (1 - luminance) * 0.9, 0.3, 1)
           });
         }
       }
 
       return targets;
-    };
-
-    const resetParticles = () => {
-      particles = Array.from({ length: PARTICLE_COUNT }, (_, index) => ({
-        x: width / 2 + (Math.random() - 0.5) * width * 0.8,
-        y: height / 2 + (Math.random() - 0.5) * height * 1.2,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        radius: mobile.matches ? 0.7 + Math.random() * 0.65 : 0.8 + Math.random() * 0.9,
-        seed: Math.random() * Math.PI * 2,
-        index
-      }));
     };
 
     const resize = () => {
@@ -145,67 +143,59 @@ export default function ParticlePortrait() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      bangTargets = createTextTargets('!');
       textTargets = createTextTargets('PORTFOLIO');
       faceTargets = createFaceTargets();
-      resetParticles();
+      textParticles = createParticleGroup(TEXT_PARTICLES, width, height);
+      faceParticles = createParticleGroup(FACE_PARTICLES, width, height);
     };
 
-    const drawParticle = (particle, alpha = 1, radius = particle.radius) => {
+    const drawParticle = (particle, alpha, radiusScale = 1) => {
       context.globalAlpha = alpha;
       context.beginPath();
-      context.arc(particle.x, particle.y, radius, 0, Math.PI * 2);
+      context.arc(particle.x, particle.y, particle.radius * radiusScale, 0, Math.PI * 2);
       context.fill();
     };
 
-    const targetFor = (particle, targets) => {
+    const getTarget = (particle, targets) => {
       if (!targets.length) return { x: width / 2, y: height / 2, alpha: 1 };
-      return targets[particle.index % targets.length];
+      return targets[Math.floor(particle.seed * 1000) % targets.length];
+    };
+
+    const moveGroup = (particles, targets, progress, scatter = 0, speed = 0.1) => {
+      const ease = easeOutCubic(clamp(progress, 0, 1));
+      for (const particle of particles) {
+        const target = getTarget(particle, targets);
+        const angle = particle.seed + performance.now() * 0.00035;
+        const tx = target.x + Math.cos(angle) * scatter * (1 - ease);
+        const ty = target.y + Math.sin(angle) * scatter * (1 - ease) * 0.65;
+        particle.x += (tx - particle.x) * speed;
+        particle.y += (ty - particle.y) * speed;
+        drawParticle(particle, clamp(0.12 + ease * 0.88, 0, 1), 0.72 + ease * 0.38);
+      }
     };
 
     const animate = (now) => {
       const elapsed = (now - startedAt) / 1000;
       const progress = clamp(elapsed / INTRO_DURATION, 0, 1);
-      const textProgress = clamp((progress - 0.08) / 0.27, 0, 1);
-      const faceProgress = clamp((progress - 0.61) / 0.25, 0, 1);
-      const introEase = easeOutCubic(progress);
-
       context.clearRect(0, 0, width, height);
       context.fillStyle = '#fff';
 
-      if (progress < 0.08) {
-        const pulse = 1 + Math.sin(now * 0.012) * 0.08;
-        for (const particle of particles) {
-          particle.x += (width / 2 - particle.x) * 0.08;
-          particle.y += (height / 2 - particle.y) * 0.08;
-          drawParticle(particle, 0.08, particle.radius * 0.55 * pulse);
-        }
-      } else if (progress < 0.61) {
-        const ease = easeOutCubic(textProgress);
-        for (const particle of particles) {
-          const target = targetFor(particle, textTargets);
-          const scatter = (1 - ease) * 180;
-          const angle = particle.seed + now * 0.00035;
-          const tx = target.x + Math.cos(angle) * scatter;
-          const ty = target.y + Math.sin(angle) * scatter * 0.55;
-          particle.x += (tx - particle.x) * 0.09;
-          particle.y += (ty - particle.y) * 0.09;
-          const alpha = clamp(0.15 + ease * 0.85, 0, 1);
-          drawParticle(particle, alpha, particle.radius * (0.65 + ease * 0.4));
-        }
+      if (progress < 0.16) {
+        moveGroup(textParticles, bangTargets, progress / 0.16, 90, 0.11);
+        moveGroup(faceParticles, faceTargets, 0, 240, 0.025);
+      } else if (progress < 0.44) {
+        moveGroup(textParticles, textTargets, (progress - 0.16) / 0.28, 150, 0.12);
+        moveGroup(faceParticles, faceTargets, 0, 190, 0.03);
+      } else if (progress < 0.63) {
+        moveGroup(textParticles, textTargets, 1, 0, 0.12);
+        moveGroup(faceParticles, faceTargets, 0, 150, 0.045);
+      } else if (progress < 0.9) {
+        moveGroup(textParticles, textTargets, 1, 0, 0.1);
+        moveGroup(faceParticles, faceTargets, (progress - 0.63) / 0.27, 100, 0.11);
       } else {
-        const morph = easeOutCubic(faceProgress);
-        for (const particle of particles) {
-          const textTarget = targetFor(particle, textTargets);
-          const faceTarget = targetFor(particle, faceTargets);
-          const angle = particle.seed + now * 0.0004;
-          const swirl = (1 - morph) * 34;
-          const tx = textTarget.x * (1 - morph) + faceTarget.x * morph + Math.cos(angle) * swirl;
-          const ty = textTarget.y * (1 - morph) + faceTarget.y * morph + Math.sin(angle) * swirl;
-          particle.x += (tx - particle.x) * (0.08 + morph * 0.05);
-          particle.y += (ty - particle.y) * (0.08 + morph * 0.05);
-          const alpha = clamp(0.85 + (faceTarget.alpha || 1) * 0.15, 0, 1);
-          drawParticle(particle, alpha, particle.radius * (0.72 + morph * 0.35));
-        }
+        moveGroup(textParticles, textTargets, 1, 0, 0.08);
+        moveGroup(faceParticles, faceTargets, 1, 0, 0.08);
       }
 
       context.globalAlpha = 1;
@@ -217,21 +207,27 @@ export default function ParticlePortrait() {
       }
     };
 
-    image = new Image();
-    image.decoding = 'async';
-    image.onload = () => {
+    const start = () => {
       resize();
       startedAt = performance.now();
+      if (reduceMotion) {
+        intro.dataset.state = 'complete';
+        return;
+      }
       intro.dataset.state = 'active';
       frameId = window.requestAnimationFrame(animate);
     };
+
+    image = new Image();
+    image.decoding = 'async';
+    image.onload = start;
     image.onerror = () => {
       intro.dataset.state = 'complete';
     };
     image.src = IMAGE_SRC;
 
     resize();
-    intro.dataset.state = 'loading';
+    intro.dataset.state = reduceMotion ? 'complete' : 'loading';
 
     const onResize = () => {
       window.clearTimeout(resizeTimer);
@@ -239,10 +235,6 @@ export default function ParticlePortrait() {
     };
 
     window.addEventListener('resize', onResize, { passive: true });
-
-    if (reduceMotion) {
-      intro.dataset.state = 'complete';
-    }
 
     return () => {
       window.clearTimeout(resizeTimer);
