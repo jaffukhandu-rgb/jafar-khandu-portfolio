@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowUpRight, Download, Mail, Menu, X, Code2, Database, Server, Layers3, CheckCircle2 } from 'lucide-react';
+import ParticlePortrait from './ParticlePortrait';
 import './styles.css';
 import './project-scroll.css';
+import './particle-hero-intro.css';
 
 const projects = [
   {
@@ -41,12 +43,17 @@ const skills = [
 function App() {
   const [open, setOpen] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
-  const nav = ['Work', 'About', 'Experience', 'Contact'];
+  const nav = ['Home', 'About', 'Projects', 'Contact'];
   const resumeUrl = '/resume.html';
 
   const go = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setOpen(false);
+  };
+
+  const navTarget = (item) => {
+    const targets = { Home: 'home', About: 'about', Projects: 'work', Contact: 'contact' };
+    go(targets[item]);
   };
 
   useEffect(() => {
@@ -149,13 +156,13 @@ function App() {
 
       <header className="nav-wrap">
         <nav className="nav container">
-          <button className="brand" onClick={() => go('home')} aria-label="Go to home">
+          <button className="brand" onClick={() => navTarget('Home')} aria-label="Go to home">
             <span>Jafar Khandu</span>
           </button>
 
           <div className={`nav-links ${open ? 'open' : ''}`}>
             {nav.map((item) => (
-              <button key={item} onClick={() => go(item.toLowerCase())}>{item}</button>
+              <button key={item} onClick={() => navTarget(item)}>{item}</button>
             ))}
             <a href={resumeUrl} target="_blank" rel="noreferrer"><Download size={14} /> Résumé</a>
             <button className="nav-cta" onClick={() => go('contact')}>Start a project</button>
@@ -178,25 +185,7 @@ function App() {
           <div className="floating-note note-bottom" data-hero-parallax data-speed="0.88" data-drift="30" data-rotate="-6">Make it reliable. Then make it beautiful.</div>
 
           <div className="hero-inner container">
-            <div className="hero-portrait reveal">
-              <div className="portrait-orbit" />
-              <img src="/profile.jpg" alt="Jafar Khandu" />
-            </div>
-            <p className="eyebrow reveal"><span /> FULL-STACK SOFTWARE DEVELOPER · PUNE</p>
-            <h1 className="hero-title reveal">I build web products<br /><em>that feel considered.</em></h1>
-            <p className="hero-subtitle reveal">Reliable backend systems, responsive interfaces and real-time experiences — built from idea to production.</p>
-
-            <div className="hero-actions reveal">
-              <button className="pill-button filled" onClick={() => go('work')}>View work <ArrowUpRight size={17} /></button>
-              <button className="text-button" onClick={() => go('about')}>About me <ArrowUpRight size={15} /></button>
-              <a className="text-button" href={resumeUrl} target="_blank" rel="noreferrer">Download résumé <Download size={15} /></a>
-            </div>
-
-            <div className="hero-stats reveal">
-              <div><strong>03</strong><span>SELECTED PROJECTS</span></div>
-              <div><strong>.NET</strong><span>BACKEND SPECIALIZATION</span></div>
-              <div><strong>FULL-STACK</strong><span>END-TO-END DELIVERY</span></div>
-            </div>
+            <ParticlePortrait />
           </div>
         </section>
 
