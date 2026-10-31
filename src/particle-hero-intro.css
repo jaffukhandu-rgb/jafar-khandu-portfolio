@@ -1,0 +1,219 @@
+/* Particle portrait hero — isolated from the existing site styles. */
+.hero {
+  min-height: 100svh;
+  padding-top: 76px;
+  overflow: hidden;
+}
+
+.hero-inner {
+  position: relative;
+  width: 100%;
+  min-height: calc(100svh - 76px);
+  max-width: none;
+  padding: 0 24px;
+}
+
+.particle-hero-shell {
+  position: relative;
+  width: min(1500px, 100%);
+  height: calc(100svh - 92px);
+  min-height: 620px;
+  margin: 0 auto;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.particle-portrait-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.particle-hero-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.particle-hero-eyebrow {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(255, 255, 255, .68);
+  font: 600 11px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: .24em;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  animation: particleIntroText .7s ease forwards .15s;
+}
+
+.particle-hero-word {
+  position: absolute;
+  z-index: 2;
+  top: 53%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(92px, 13.5vw, 210px);
+  font-weight: 900;
+  line-height: .78;
+  letter-spacing: -.075em;
+  white-space: nowrap;
+  user-select: none;
+  text-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+}
+
+.particle-hero-word span {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, -60px, 0) scale(.9);
+  filter: blur(7px);
+  animation: particleLetterIn .72s cubic-bezier(.2, .85, .25, 1) forwards;
+  animation-delay: calc(.24s + var(--char-index, 0) * .07s);
+}
+
+.particle-tagline {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 7%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(255, 255, 255, .82);
+  font: 700 11px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: .28em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: particleIntroText .7s ease forwards 1.15s;
+}
+
+.particle-hero-loading {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 18%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, .52);
+  font: 500 10px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  transition: opacity .45s ease;
+  pointer-events: none;
+}
+
+.particle-loading-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 14px rgba(255, 255, 255, .75);
+  animation: particlePulse 1s ease-in-out infinite;
+}
+
+.particle-hero-shell[data-intro-state="assembling"] .particle-hero-loading,
+.particle-hero-shell[data-intro-state="complete"] .particle-hero-loading {
+  opacity: 0;
+}
+
+.particle-hero-shell[data-intro-state="error"] .particle-hero-loading {
+  color: rgba(255, 120, 120, .8);
+}
+
+@keyframes particleLetterIn {
+  0% { opacity: 0; transform: translate3d(0, -60px, 0) scale(.9); filter: blur(7px); }
+  72% { opacity: 1; transform: translate3d(0, 6px, 0) scale(1.02); filter: blur(0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+
+@keyframes particleIntroText {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes particlePulse {
+  50% { opacity: .35; transform: scale(.65); }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    min-height: 100svh;
+    padding-top: 62px;
+  }
+
+  .hero-inner {
+    min-height: calc(100svh - 62px);
+    padding: 0 12px;
+  }
+
+  .particle-hero-shell {
+    height: calc(100svh - 74px);
+    min-height: 590px;
+  }
+
+  .particle-portrait-canvas {
+    height: 58%;
+    inset: 0 0 auto;
+  }
+
+  .particle-hero-eyebrow {
+    top: 4%;
+    font-size: 8px;
+    letter-spacing: .16em;
+  }
+
+  .particle-hero-word {
+    top: 70%;
+    font-size: clamp(56px, 17vw, 100px);
+    letter-spacing: -.085em;
+  }
+
+  .particle-tagline {
+    bottom: 8%;
+    font-size: 8px;
+    letter-spacing: .16em;
+  }
+
+  .particle-hero-loading {
+    top: 11%;
+    font-size: 8px;
+    letter-spacing: .12em;
+  }
+
+  .hero > .floating-note {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle-hero-word span,
+  .particle-hero-eyebrow,
+  .particle-tagline,
+  .particle-loading-dot {
+    animation: none;
+  }
+
+  .particle-hero-word span,
+  .particle-hero-eyebrow,
+  .particle-tagline {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
