@@ -13,7 +13,7 @@
   padding: 0 24px;
 }
 
-.particle-hero-shell {
+.particle-hero-intro {
   position: relative;
   width: min(1500px, 100%);
   height: calc(100svh - 92px);
@@ -31,13 +31,6 @@
   width: 100%;
   height: 100%;
   pointer-events: auto;
-}
-
-.particle-hero-copy {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
 }
 
 .particle-hero-name {
@@ -101,13 +94,13 @@
   pointer-events: none;
 }
 
-.particle-hero-shell[data-intro-state="loading"] .particle-hero-word,
-.particle-hero-shell[data-intro-state="loading"] .particle-hero-name,
-.particle-hero-shell[data-intro-state="assembling"] .particle-hero-name {
+.particle-hero-intro[data-intro-state="loading"] .particle-hero-word,
+.particle-hero-intro[data-intro-state="loading"] .particle-hero-name,
+.particle-hero-intro[data-intro-state="assembling"] .particle-hero-name {
   opacity: 0;
 }
 
-.particle-hero-shell[data-intro-state="complete"] .particle-hero-word span {
+.particle-hero-intro[data-intro-state="complete"] .particle-hero-word span {
   opacity: 1;
 }
 
@@ -158,7 +151,7 @@
     padding: 0 12px;
   }
 
-  .particle-hero-shell {
+  .particle-hero-intro {
     height: calc(100svh - 74px);
     min-height: 590px;
   }
