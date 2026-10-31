@@ -41,6 +41,7 @@ export default function ParticlePortrait() {
     let imageReady = false;
 
     const setIntroState = (state) => {
+      shell.dataset.introState = state;
       const site = shell.closest('.site-shell');
       if (site) site.dataset.heroIntro = state;
     };
