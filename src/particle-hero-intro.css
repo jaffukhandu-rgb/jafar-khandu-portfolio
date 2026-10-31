@@ -1,0 +1,194 @@
+/* Particle portrait hero — isolated from the existing site styles. */
+.hero {
+  min-height: 100svh;
+  padding-top: 76px;
+  overflow: hidden;
+}
+
+.hero-inner {
+  position: relative;
+  width: 100%;
+  min-height: calc(100svh - 76px);
+  max-width: none;
+  padding: 0 24px;
+}
+
+.particle-hero-intro {
+  position: relative;
+  width: min(1500px, 100%);
+  height: calc(100svh - 92px);
+  min-height: 620px;
+  margin: 0 auto;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.particle-hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+}
+
+.particle-hero-name {
+  position: absolute;
+  z-index: 2;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(255, 255, 255, .68);
+  font: 600 11px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: .24em;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.particle-hero-word {
+  position: absolute;
+  z-index: 2;
+  top: 53%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(92px, 13.5vw, 210px);
+  font-weight: 900;
+  line-height: .78;
+  letter-spacing: -.075em;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  text-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+}
+
+.particle-hero-word span {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, -60px, 0) scale(.9);
+  filter: blur(7px);
+  animation: particleLetterIn .72s cubic-bezier(.2, .85, .25, 1) forwards;
+  animation-delay: calc(.24s + var(--char-index, 0) * .07s);
+}
+
+.particle-hero-tagline {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 7%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: rgba(255, 255, 255, .82);
+  font: 700 11px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: .28em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.particle-hero-intro[data-intro-state="loading"] .particle-hero-word,
+.particle-hero-intro[data-intro-state="loading"] .particle-hero-name,
+.particle-hero-intro[data-intro-state="assembling"] .particle-hero-name {
+  opacity: 0;
+}
+
+.particle-hero-intro[data-intro-state="complete"] .particle-hero-word span {
+  opacity: 1;
+}
+
+.site-shell[data-hero-intro="loading"] .nav-wrap,
+.site-shell[data-hero-intro="assembling"] .nav-wrap {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.site-shell[data-hero-intro="complete"] .nav-wrap {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity .8s ease;
+}
+
+.site-shell[data-hero-intro="loading"] .hero,
+.site-shell[data-hero-intro="assembling"] .hero {
+  background: #000;
+}
+
+.site-shell[data-hero-intro="complete"] .hero {
+  background: #050505;
+  transition: background 1s ease;
+}
+
+.hero .eyebrow,
+.hero .hero-title,
+.hero .hero-subtitle,
+.hero .hero-actions,
+.hero .hero-stats {
+  display: none;
+}
+
+@keyframes particleLetterIn {
+  0% { opacity: 0; transform: translate3d(0, -60px, 0) scale(.9); filter: blur(7px); }
+  72% { opacity: 1; transform: translate3d(0, 6px, 0) scale(1.02); filter: blur(0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    min-height: 100svh;
+    padding-top: 62px;
+  }
+
+  .hero-inner {
+    min-height: calc(100svh - 62px);
+    padding: 0 12px;
+  }
+
+  .particle-hero-intro {
+    height: calc(100svh - 74px);
+    min-height: 590px;
+  }
+
+  .particle-hero-canvas {
+    height: 58%;
+    inset: 0 0 auto;
+  }
+
+  .particle-hero-name {
+    top: 4%;
+    font-size: 8px;
+    letter-spacing: .16em;
+  }
+
+  .particle-hero-word {
+    top: 70%;
+    font-size: clamp(56px, 17vw, 100px);
+    letter-spacing: -.085em;
+  }
+
+  .particle-hero-tagline {
+    bottom: 8%;
+    font-size: 8px;
+    letter-spacing: .16em;
+  }
+
+  .hero > .floating-note {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle-hero-word span {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
