@@ -1,4 +1,4 @@
-/* Particle portrait hero — isolated from the existing site styles. */
+/* Profile-photo hero layer — keeps the existing hero isolated from the site styles. */
 .hero {
   min-height: 100svh;
   padding-top: 76px;
@@ -23,124 +23,169 @@
   isolation: isolate;
 }
 
-.particle-hero-canvas {
+/* Static portrait replacing the old particle/dot canvas. */
+.particle-profile-photo-wrap {
   position: absolute;
-  inset: 0;
-  z-index: 1;
+  z-index: 3;
+  top: 10%;
+  left: 50%;
+  width: clamp(150px, 13vw, 205px);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  padding: 7px;
+  border: 1px solid rgba(207, 194, 239, .26);
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(255, 255, 255, .10), rgba(31, 24, 53, .38));
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, .34),
+    inset 0 0 28px rgba(220, 208, 255, .06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: profileReveal .9s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.particle-profile-photo-wrap::before,
+.particle-profile-photo-wrap::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.particle-profile-photo-wrap::before {
+  inset: -12px;
+  border: 1px solid rgba(203, 188, 244, .18);
+  box-shadow: 0 0 35px rgba(147, 117, 219, .10);
+  animation: profileOrbit 7s ease-in-out infinite;
+}
+
+.particle-profile-photo-wrap::after {
+  inset: -26px;
+  border: 1px dashed rgba(203, 188, 244, .10);
+  animation: profileOrbitReverse 12s linear infinite;
+}
+
+.particle-profile-photo {
   display: block;
   width: 100%;
   height: 100%;
-  pointer-events: auto;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: #111019;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, .28);
+}
+
+.particle-portrait-glow {
+  position: absolute;
+  z-index: 1;
+  top: 8%;
+  left: 50%;
+  width: min(520px, 48vw);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 108, 215, .16), rgba(84, 61, 142, .05) 42%, transparent 70%);
+  filter: blur(22px);
+  pointer-events: none;
+  animation: profileGlow 6s ease-in-out infinite;
+}
+
+.particle-portrait-orbit {
+  position: absolute;
+  z-index: 0;
+  top: 7%;
+  left: 50%;
+  width: min(470px, 43vw);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border: 1px solid rgba(203, 188, 244, .07);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 .particle-hero-name {
   position: absolute;
-  z-index: 2;
-  top: 6%;
+  z-index: 4;
+  top: 39%;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-  color: rgba(255, 255, 255, .68);
+  color: rgba(255, 255, 255, .72);
   font: 600 11px/1.2 Arial, Helvetica, sans-serif;
   letter-spacing: .24em;
   text-align: center;
   white-space: nowrap;
   pointer-events: none;
-}
-
-.particle-hero-word {
-  position: absolute;
-  z-index: 2;
-  top: 53%;
-  left: 50%;
-  width: 100%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  justify-content: center;
-  margin: 0;
-  color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(92px, 13.5vw, 210px);
-  font-weight: 900;
-  line-height: .78;
-  letter-spacing: -.075em;
-  white-space: nowrap;
-  user-select: none;
-  pointer-events: none;
-  text-shadow: 0 18px 40px rgba(0, 0, 0, .35);
-}
-
-.particle-hero-word span {
-  display: inline-block;
-  opacity: 0;
-  transform: translate3d(0, -60px, 0) scale(.9);
-  filter: blur(7px);
-  animation: particleLetterIn .72s cubic-bezier(.2, .85, .25, 1) forwards;
-  animation-delay: calc(.24s + var(--char-index, 0) * .07s);
+  animation: profileTextReveal .8s .16s cubic-bezier(.2, .8, .2, 1) both;
 }
 
 .particle-hero-tagline {
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   left: 50%;
-  bottom: 7%;
+  top: 43%;
   transform: translateX(-50%);
   margin: 0;
-  color: rgba(255, 255, 255, .82);
-  font: 700 11px/1.2 Arial, Helvetica, sans-serif;
-  letter-spacing: .28em;
+  color: rgba(255, 255, 255, .64);
+  font: 700 10px/1.2 Arial, Helvetica, sans-serif;
+  letter-spacing: .24em;
   white-space: nowrap;
   text-transform: uppercase;
   pointer-events: none;
+  animation: profileTextReveal .8s .24s cubic-bezier(.2, .8, .2, 1) both;
 }
 
-.particle-hero-intro[data-intro-state="loading"] .particle-hero-word,
-.particle-hero-intro[data-intro-state="loading"] .particle-hero-name,
-.particle-hero-intro[data-intro-state="assembling"] .particle-hero-name {
-  opacity: 0;
+@keyframes profileReveal {
+  from { opacity: 0; transform: translateX(-50%) translateY(18px) scale(.88); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
 }
 
-.particle-hero-intro[data-intro-state="complete"] .particle-hero-word span {
-  opacity: 1;
+@keyframes profileTextReveal {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-.site-shell[data-hero-intro="loading"] .nav-wrap,
-.site-shell[data-hero-intro="assembling"] .nav-wrap {
-  opacity: 0;
-  pointer-events: none;
+@keyframes profileGlow {
+  0%, 100% { opacity: .55; transform: translateX(-50%) scale(1); }
+  50% { opacity: .85; transform: translateX(-50%) scale(1.08); }
 }
 
-.site-shell[data-hero-intro="complete"] .nav-wrap {
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity .8s ease;
+@keyframes profileOrbit {
+  0%, 100% { transform: rotate(0deg) scale(1); opacity: .72; }
+  50% { transform: rotate(8deg) scale(1.035); opacity: 1; }
 }
 
-.site-shell[data-hero-intro="loading"] .hero,
-.site-shell[data-hero-intro="assembling"] .hero {
-  background: #000;
+@keyframes profileOrbitReverse {
+  to { transform: rotate(-360deg); }
 }
 
-.site-shell[data-hero-intro="complete"] .hero {
-  background: #050505;
-  transition: background 1s ease;
+@media (max-width: 900px) {
+  .hero {
+    min-height: 100svh;
+  }
+
+  .particle-profile-photo-wrap {
+    top: 9%;
+  }
+
+  .particle-portrait-orbit {
+    top: 6%;
+  }
+
+  .particle-hero-name {
+    top: 38%;
+  }
+
+  .particle-hero-tagline {
+    top: 42%;
+  }
 }
 
-.hero .eyebrow,
-.hero .hero-title,
-.hero .hero-subtitle,
-.hero .hero-actions,
-.hero .hero-stats {
-  display: none;
-}
-
-@keyframes particleLetterIn {
-  0% { opacity: 0; transform: translate3d(0, -60px, 0) scale(.9); filter: blur(7px); }
-  72% { opacity: 1; transform: translate3d(0, 6px, 0) scale(1.02); filter: blur(0); }
-  100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-}
-
-@media (max-width: 700px) {
+@media (max-width: 640px) {
   .hero {
     min-height: 100svh;
     padding-top: 62px;
@@ -156,39 +201,50 @@
     min-height: 590px;
   }
 
-  .particle-hero-canvas {
-    height: 58%;
-    inset: 0 0 auto;
+  .particle-profile-photo-wrap {
+    top: 8%;
+    width: 138px;
+    padding: 6px;
+  }
+
+  .particle-profile-photo-wrap::before {
+    inset: -9px;
+  }
+
+  .particle-profile-photo-wrap::after {
+    inset: -18px;
+  }
+
+  .particle-portrait-orbit {
+    top: 5%;
+    width: 290px;
+  }
+
+  .particle-portrait-glow {
+    top: 7%;
+    width: 320px;
   }
 
   .particle-hero-name {
-    top: 4%;
+    top: 34%;
     font-size: 8px;
     letter-spacing: .16em;
-  }
-
-  .particle-hero-word {
-    top: 70%;
-    font-size: clamp(56px, 17vw, 100px);
-    letter-spacing: -.085em;
   }
 
   .particle-hero-tagline {
-    bottom: 8%;
+    top: 38%;
     font-size: 8px;
     letter-spacing: .16em;
-  }
-
-  .hero > .floating-note {
-    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .particle-hero-word span {
-    animation: none;
-    opacity: 1;
-    transform: none;
-    filter: none;
+  .particle-profile-photo-wrap,
+  .particle-profile-photo-wrap::before,
+  .particle-profile-photo-wrap::after,
+  .particle-portrait-glow,
+  .particle-hero-name,
+  .particle-hero-tagline {
+    animation: none !important;
   }
 }
