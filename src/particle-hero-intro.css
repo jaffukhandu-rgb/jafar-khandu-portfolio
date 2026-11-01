@@ -1,4 +1,4 @@
-/* Persistent portfolio particle hero. The original hero content now lives in #intro. */
+/* Persistent portfolio particle hero. The original hero content is integrated below the particle visual. */
 
 .hero {
   position: relative;
@@ -86,9 +86,9 @@
 
 .portfolio-hero-visual {
   position: absolute;
-  inset: 0;
+  inset: 0 0 auto;
   width: 100%;
-  height: 100%;
+  height: 70%;
   overflow: hidden;
   background: #050505;
   isolation: isolate;
@@ -118,8 +118,6 @@
   pointer-events: auto;
 }
 
-/* Keep the heading DOM alive because the particle animation uses its letters,
-   but do not show the large PORTFOLIO word in the hero. */
 .portfolio-heading {
   position: absolute;
   z-index: 3;
@@ -214,7 +212,7 @@
   position: absolute;
   z-index: 4;
   left: clamp(24px, 6vw, 88px);
-  bottom: clamp(28px, 7vh, 72px);
+  bottom: clamp(18px, 4vh, 40px);
   margin: 0;
   color: rgba(255,255,255,.58);
   font-size: 10px;
@@ -280,32 +278,96 @@
   opacity: .82;
 }
 
-.intro-section {
-  position: relative;
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line);
-}
-
-.intro-section .hero-inner {
-  height: auto;
-  max-width: var(--max);
+.hero-content {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: clamp(24px, 5vh, 52px);
+  width: min(calc(100% - 40px), 920px);
+  transform: translate(-50%, 18px);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 120px 0 80px;
+  opacity: 0;
+  pointer-events: none;
+  animation: hero-content-in .9s ease 4.55s forwards;
 }
 
-.intro-section .hero-title,
-.intro-section .hero-subtitle,
-.intro-section .hero-actions,
-.intro-section .hero-portrait,
-.intro-section .eyebrow {
+.portfolio-intro-complete .hero-content {
   opacity: 1;
+  transform: translate(-50%, 0);
+  animation: none;
+  pointer-events: auto;
+}
+
+.hero-content .eyebrow {
+  margin: 0 0 13px;
+  color: rgba(255,255,255,.58);
+  font-size: 9px;
+  letter-spacing: .2em;
+}
+
+.hero-content .eyebrow span {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  background: #fff;
+  box-shadow: 0 0 14px rgba(255,255,255,.45);
+}
+
+.hero-content .hero-title {
+  max-width: 900px;
+  margin: 0;
+  font: 500 clamp(46px, 5.7vw, 78px)/.86 'Cormorant Garamond', serif;
+  letter-spacing: -.045em;
+}
+
+.hero-content .hero-title em {
+  font-style: italic;
+  color: #c8c8c8;
+}
+
+.hero-content .hero-subtitle {
+  max-width: 640px;
+  margin: 15px auto 0;
+  color: rgba(255,255,255,.58);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.hero-content .hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-top: 18px;
+}
+
+.hero-content .pill-button {
+  padding: 10px 17px;
+  font-size: 11px;
+}
+
+.hero-content .text-button {
+  padding: 6px 0;
+  color: rgba(255,255,255,.56);
+  font-size: 11px;
+}
+
+.hero-content .pill-button.filled {
+  background: #fff;
+  color: #090909;
+  border-color: #fff;
+}
+
+.hero-content .pill-button.filled:hover {
+  background: #e8e8e8;
+  border-color: #e8e8e8;
+}
+
+@keyframes hero-content-in {
+  from { opacity: 0; transform: translate(-50%, 18px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 @media (max-width: 700px) {
@@ -318,6 +380,10 @@
     border-color: rgba(255,255,255,.08);
   }
 
+  .portfolio-hero-visual {
+    height: 62%;
+  }
+
   .portfolio-heading {
     top: 49%;
     padding-inline: 1vw;
@@ -327,7 +393,7 @@
 
   .portfolio-tagline {
     left: 20px;
-    bottom: 28px;
+    bottom: 20px;
     font-size: 8px;
     letter-spacing: .16em;
   }
@@ -341,8 +407,46 @@
     width: min(58vw, 260px);
   }
 
-  .intro-section .hero-inner {
-    padding-inline: 20px;
+  .hero-content {
+    bottom: 22px;
+    width: calc(100% - 28px);
+  }
+
+  .hero-content .eyebrow {
+    margin-bottom: 10px;
+    font-size: 7px;
+    letter-spacing: .13em;
+  }
+
+  .hero-content .hero-title {
+    font-size: clamp(39px, 11vw, 58px);
+    line-height: .9;
+  }
+
+  .hero-content .hero-subtitle {
+    margin-top: 10px;
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .hero-content .hero-actions {
+    gap: 14px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-content .pill-button {
+    padding: 9px 13px;
+    font-size: 10px;
+  }
+
+  .hero-content .text-button {
+    font-size: 10px;
+  }
+
+  .desktop-break {
+    display: none;
   }
 }
 
@@ -356,7 +460,8 @@
   .portfolio-letter.is-revealed,
   .portfolio-letter.is-locked,
   .portfolio-tagline,
-  .portfolio-intro-dot {
+  .portfolio-intro-dot,
+  .hero-content {
     animation: none !important;
     transition: none !important;
   }
@@ -368,8 +473,9 @@
     transform: translateY(0) rotate(0deg);
   }
 
-  .portfolio-tagline {
+  .portfolio-tagline,
+  .hero-content {
     opacity: 1;
-    transform: none;
+    transform: translate(-50%, 0);
   }
 }
