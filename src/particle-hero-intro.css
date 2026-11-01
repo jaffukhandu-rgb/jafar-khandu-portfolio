@@ -39,6 +39,11 @@
   box-shadow: none;
 }
 
+.portfolio-intro-complete .nav-wrap {
+  opacity: 1;
+  animation: none;
+}
+
 .nav {
   min-height: 72px;
 }
@@ -216,6 +221,13 @@
   opacity: 0;
   transform: translateY(12px);
   animation: portfolio-tagline-in .8s ease 4.5s forwards;
+}
+
+.portfolio-hero-visual[data-stage='final'] .portfolio-tagline,
+.portfolio-intro-complete .portfolio-tagline {
+  opacity: 1;
+  transform: translateY(0);
+  animation: none;
 }
 
 .portfolio-tagline em {
