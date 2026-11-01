@@ -57,6 +57,12 @@ export default function ParticlePortrait() {
       letters.forEach((letter) => letter.classList.add('is-revealed'));
     };
 
+    const markFinal = () => {
+      skipped = true;
+      hero.dataset.stage = 'final';
+      document.documentElement.classList.add('portfolio-intro-complete');
+    };
+
     const lockLetters = (elapsed) => {
       const lockStart = 1.08;
       if (elapsed < lockStart) return;
@@ -166,8 +172,7 @@ export default function ParticlePortrait() {
     };
 
     const settleInstantly = () => {
-      skipped = true;
-      hero.dataset.stage = 'final';
+      markFinal();
       setLettersRevealed();
       letters.forEach((letter) => {
         letter.textContent = letter.dataset.letter;
@@ -190,7 +195,7 @@ export default function ParticlePortrait() {
         if (elapsed < 1.08) hero.dataset.stage = 'drop';
         else if (elapsed < HEADING_SETTLE) hero.dataset.stage = 'scramble';
         else if (elapsed < 4.5) hero.dataset.stage = 'portrait';
-        else hero.dataset.stage = 'final';
+        else markFinal();
       }
 
       context.clearRect(0, 0, width, height);
@@ -235,12 +240,6 @@ export default function ParticlePortrait() {
 
       context.globalAlpha = 1;
       if (fallback) fallback.classList.toggle('is-visible', imageFailed);
-
-      if (!skipped && elapsed >= FINAL_TIME) {
-        skipped = true;
-        hero.dataset.stage = 'final';
-      }
-
       frameId = window.requestAnimationFrame(animate);
     };
 
@@ -255,6 +254,7 @@ export default function ParticlePortrait() {
     };
     const onSkip = () => { if (!skipped) settleInstantly(); };
 
+    document.documentElement.classList.remove('portfolio-intro-complete');
     image = new Image();
     image.decoding = 'async';
     image.onload = () => {
@@ -292,6 +292,7 @@ export default function ParticlePortrait() {
       window.removeEventListener('keydown', onSkip);
       window.removeEventListener('scroll', onSkip);
       window.removeEventListener('click', onSkip);
+      document.documentElement.classList.remove('portfolio-intro-complete');
     };
   }, []);
 
