@@ -1,140 +1,158 @@
 import { useEffect, useRef } from 'react';
-import { ArrowUpRight, Download } from 'lucide-react';
 
+const IMAGE_SRC = '/profile-cutout.png';
+const FALLBACK_SRC = '/profile.jpg';
+const DESKTOP_GAP = 4;
+const MOBILE_GAP = 6;
+const MAX_DESKTOP_PARTICLES = 14000;
+const MAX_MOBILE_PARTICLES = 5500;
+const HEADING_SETTLE = 1.8;
+const PORTRAIT_DURATION = 2.5;
+const FINAL_TIME = HEADING_SETTLE + PORTRAIT_DURATION;
+const RANDOM_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const easeOutCubic = (value) => 1 - Math.pow(1 - value, 3);
-
-const IMAGE_SRC = '/profile.jpg';
-const INTRO_DURATION = 9;
-const TEXT_PARTICLES = 720;
-const FACE_PARTICLES = 760;
-
-const createParticleGroup = (count, width, height) => Array.from({ length: count }, () => ({
-  x: width / 2 + (Math.random() - 0.5) * width * 0.9,
-  y: height / 2 + (Math.random() - 0.5) * height * 1.4,
-  radius: 0.7 + Math.random() * 1.1,
-  seed: Math.random() * Math.PI * 2
-}));
+const easeOutBack = (value) => {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(value - 1, 3) + c1 * Math.pow(value - 1, 2);
+};
+const getRandomChar = () => RANDOM_CHARS[Math.floor(Math.random() * RANDOM_CHARS.length)];
 
 export default function ParticlePortrait() {
-  const introRef = useRef(null);
+  const heroRef = useRef(null);
   const canvasRef = useRef(null);
+  const headingRef = useRef(null);
+  const fallbackRef = useRef(null);
 
   useEffect(() => {
-    const intro = introRef.current;
+    const hero = heroRef.current;
     const canvas = canvasRef.current;
-    if (!intro || !canvas) return undefined;
+    const heading = headingRef.current;
+    const fallback = fallbackRef.current;
+    if (!hero || !canvas || !heading) return undefined;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { alpha: true });
     if (!context) return undefined;
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const mobile = window.matchMedia('(max-width: 700px)');
+    const mobileQuery = window.matchMedia('(max-width: 699px)');
+    const letters = Array.from(heading.querySelectorAll('.portfolio-letter'));
 
-    let frameId = 0;
-    let resizeTimer = 0;
-    let image = null;
     let width = 1;
     let height = 1;
     let dpr = 1;
+    let image = null;
+    let particles = [];
+    let targets = [];
+    let frameId = 0;
+    let resizeTimer = 0;
     let startedAt = performance.now();
-    let bangTargets = [];
-    let textTargets = [];
-    let faceTargets = [];
-    let textParticles = [];
-    let faceParticles = [];
+    let lastScramble = 0;
+    let skipped = reduceMotion;
+    let imageFailed = false;
+    let pointer = { x: -1000, y: -1000, active: false };
 
-    const createTextTargets = (text) => {
-      const targetWidth = Math.min(width * 0.82, mobile.matches ? 330 : 720);
-      const targetHeight = mobile.matches ? 100 : 150;
-      const offscreen = document.createElement('canvas');
-      offscreen.width = Math.max(1, Math.round(targetWidth));
-      offscreen.height = targetHeight;
-      const offscreenContext = offscreen.getContext('2d');
-      if (!offscreenContext) return [];
-
-      offscreenContext.clearRect(0, 0, offscreen.width, offscreen.height);
-      offscreenContext.fillStyle = '#fff';
-      offscreenContext.textAlign = 'center';
-      offscreenContext.textBaseline = 'middle';
-      offscreenContext.font = `900 ${mobile.matches ? 50 : 104}px Arial, sans-serif`;
-      offscreenContext.fillText(text, offscreen.width / 2, offscreen.height / 2 + 2);
-
-      const pixels = offscreenContext.getImageData(0, 0, offscreen.width, offscreen.height).data;
-      const step = mobile.matches ? 4 : 5;
-      const targets = [];
-
-      for (let y = 0; y < offscreen.height; y += step) {
-        for (let x = 0; x < offscreen.width; x += step) {
-          const alpha = pixels[(y * offscreen.width + x) * 4 + 3];
-          if (alpha < 100) continue;
-          targets.push({
-            x: width / 2 - offscreen.width / 2 + x,
-            y: height * 0.64 - offscreen.height / 2 + y
-          });
-        }
-      }
-
-      return targets;
+    const setLettersRevealed = () => {
+      letters.forEach((letter) => letter.classList.add('is-revealed'));
     };
 
-    const createFaceTargets = () => {
-      if (!image) return [];
+    const lockLetters = (elapsed) => {
+      const lockStart = 1.08;
+      if (elapsed < lockStart) return;
+      setLettersRevealed();
 
-      const targetSize = Math.min(width * 0.48, mobile.matches ? 165 : 250);
-      const sampleSize = Math.max(80, Math.round(targetSize));
-      const offscreen = document.createElement('canvas');
-      offscreen.width = sampleSize;
-      offscreen.height = sampleSize;
-      const offscreenContext = offscreen.getContext('2d', { willReadFrequently: true });
-      if (!offscreenContext) return [];
+      if (elapsed - lastScramble < 0.045) return;
+      lastScramble = elapsed;
 
+      letters.forEach((letter, index) => {
+        const lockAt = lockStart + index * 0.07;
+        if (elapsed >= lockAt) {
+          letter.textContent = letter.dataset.letter;
+          letter.classList.add('is-locked');
+        } else {
+          letter.textContent = getRandomChar();
+        }
+      });
+    };
+
+    const createTargets = () => {
+      if (!image || imageFailed) return [];
+
+      const gap = mobileQuery.matches ? MOBILE_GAP : DESKTOP_GAP;
+      const maxParticles = mobileQuery.matches ? MAX_MOBILE_PARTICLES : MAX_DESKTOP_PARTICLES;
+      const availableHeight = Math.max(180, height * 0.8);
+      const availableWidth = Math.min(width * 0.86, availableHeight * 0.93);
       const sourceWidth = image.naturalWidth || image.width;
       const sourceHeight = image.naturalHeight || image.height;
       if (!sourceWidth || !sourceHeight) return [];
 
-      const scale = Math.max(sampleSize / sourceWidth, sampleSize / sourceHeight);
-      const drawWidth = sourceWidth * scale;
-      const drawHeight = sourceHeight * scale;
-      const drawX = (sampleSize - drawWidth) / 2;
-      const drawY = (sampleSize - drawHeight) * 0.16;
+      const scale = Math.min(availableWidth / sourceWidth, availableHeight / sourceHeight);
+      const drawWidth = Math.max(1, Math.round(sourceWidth * scale));
+      const drawHeight = Math.max(1, Math.round(sourceHeight * scale));
+      const sampleCanvas = document.createElement('canvas');
+      sampleCanvas.width = drawWidth;
+      sampleCanvas.height = drawHeight;
+      const sampleContext = sampleCanvas.getContext('2d', { willReadFrequently: true });
+      if (!sampleContext) return [];
 
-      offscreenContext.clearRect(0, 0, sampleSize, sampleSize);
-      offscreenContext.drawImage(image, drawX, drawY, drawWidth, drawHeight);
-      const pixels = offscreenContext.getImageData(0, 0, sampleSize, sampleSize).data;
-      const step = mobile.matches ? 4 : 5;
-      const targets = [];
+      sampleContext.clearRect(0, 0, drawWidth, drawHeight);
+      sampleContext.drawImage(image, 0, 0, drawWidth, drawHeight);
+      const pixels = sampleContext.getImageData(0, 0, drawWidth, drawHeight).data;
+      const offsetX = (width - drawWidth) / 2;
+      const offsetY = height - drawHeight;
+      const sampled = [];
 
-      for (let y = 0; y < sampleSize; y += step) {
-        for (let x = 0; x < sampleSize; x += step) {
-          const nx = (x + 0.5) / sampleSize - 0.5;
-          const ny = (y + 0.5) / sampleSize - 0.5;
-          if (Math.hypot(nx, ny) > 0.5) continue;
+      for (let y = 0; y < drawHeight; y += gap) {
+        for (let x = 0; x < drawWidth; x += gap) {
+          const index = (y * drawWidth + x) * 4;
+          if (pixels[index + 3] < 128) continue;
 
-          const pixelIndex = (y * sampleSize + x) * 4;
-          const r = pixels[pixelIndex] / 255;
-          const g = pixels[pixelIndex + 1] / 255;
-          const b = pixels[pixelIndex + 2] / 255;
-          const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-          const saturation = Math.max(r, g, b) - Math.min(r, g, b);
-          const background = luminance > 0.92 && saturation < 0.1;
+          const r = pixels[index] / 255;
+          const g = pixels[index + 1] / 255;
+          const b = pixels[index + 2] / 255;
+          const rawLum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+          const lum = clamp(Math.pow((rawLum - 0.04) * 1.35, 0.6), 0, 1);
+          if (lum < 0.07) continue;
 
-          if (background && ny < 0.2) continue;
-          if (luminance > 0.975 && ny < 0.38) continue;
-
-          targets.push({
-            x: width / 2 - sampleSize / 2 + x,
-            y: height * 0.37 - sampleSize / 2 + y,
-            alpha: clamp(0.28 + (1 - luminance) * 0.9, 0.3, 1)
+          sampled.push({
+            x: offsetX + x,
+            y: offsetY + y,
+            radius: gap * 0.5 * lum,
+            alpha: 0.35 + lum * 0.65,
+            delay: Math.random()
           });
         }
       }
 
-      return targets;
+      if (sampled.length <= maxParticles) return sampled;
+      const stride = sampled.length / maxParticles;
+      return Array.from({ length: maxParticles }, (_, index) => sampled[Math.floor(index * stride)]);
+    };
+
+    const createParticles = () => {
+      particles = targets.map((target) => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: 0,
+        vy: 0,
+        targetX: target.x,
+        targetY: target.y,
+        radius: target.radius,
+        alpha: target.alpha,
+        delay: target.delay
+      }));
+
+      if (skipped) {
+        particles.forEach((particle) => {
+          particle.x = particle.targetX;
+          particle.y = particle.targetY;
+        });
+      }
     };
 
     const resize = () => {
-      const rect = intro.getBoundingClientRect();
+      const rect = hero.getBoundingClientRect();
       width = Math.max(1, rect.width);
       height = Math.max(1, rect.height);
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -143,127 +161,163 @@ export default function ParticlePortrait() {
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      bangTargets = createTextTargets('!');
-      textTargets = createTextTargets('PORTFOLIO');
-      faceTargets = createFaceTargets();
-      textParticles = createParticleGroup(TEXT_PARTICLES, width, height);
-      faceParticles = createParticleGroup(FACE_PARTICLES, width, height);
+      targets = createTargets();
+      createParticles();
     };
 
-    const drawParticle = (particle, alpha, radiusScale = 1) => {
-      context.globalAlpha = alpha;
-      context.beginPath();
-      context.arc(particle.x, particle.y, particle.radius * radiusScale, 0, Math.PI * 2);
-      context.fill();
-    };
-
-    const getTarget = (particle, targets) => {
-      if (!targets.length) return { x: width / 2, y: height / 2, alpha: 1 };
-      return targets[Math.floor(particle.seed * 1000) % targets.length];
-    };
-
-    const moveGroup = (particles, targets, progress, scatter = 0, speed = 0.1) => {
-      const ease = easeOutCubic(clamp(progress, 0, 1));
-      for (const particle of particles) {
-        const target = getTarget(particle, targets);
-        const angle = particle.seed + performance.now() * 0.00035;
-        const tx = target.x + Math.cos(angle) * scatter * (1 - ease);
-        const ty = target.y + Math.sin(angle) * scatter * (1 - ease) * 0.65;
-        particle.x += (tx - particle.x) * speed;
-        particle.y += (ty - particle.y) * speed;
-        drawParticle(particle, clamp(0.12 + ease * 0.88, 0, 1), 0.72 + ease * 0.38);
-      }
+    const settleInstantly = () => {
+      skipped = true;
+      hero.dataset.stage = 'final';
+      setLettersRevealed();
+      letters.forEach((letter) => {
+        letter.textContent = letter.dataset.letter;
+        letter.classList.add('is-locked');
+      });
+      particles.forEach((particle) => {
+        particle.x = particle.targetX;
+        particle.y = particle.targetY;
+      });
+      if (fallback) fallback.classList.toggle('is-visible', imageFailed);
     };
 
     const animate = (now) => {
-      const elapsed = (now - startedAt) / 1000;
-      const progress = clamp(elapsed / INTRO_DURATION, 0, 1);
+      const elapsed = skipped ? FINAL_TIME : (now - startedAt) / 1000;
+      const portraitProgress = clamp((elapsed - HEADING_SETTLE) / PORTRAIT_DURATION, 0, 1);
+      const portraitEase = easeOutCubic(portraitProgress);
+
+      if (!skipped) {
+        lockLetters(elapsed);
+        if (elapsed < 1.08) hero.dataset.stage = 'drop';
+        else if (elapsed < HEADING_SETTLE) hero.dataset.stage = 'scramble';
+        else if (elapsed < 4.5) hero.dataset.stage = 'portrait';
+        else hero.dataset.stage = 'final';
+      }
+
       context.clearRect(0, 0, width, height);
       context.fillStyle = '#fff';
 
-      if (progress < 0.14) {
-        moveGroup(textParticles, bangTargets, progress / 0.14, 110, 0.12);
-        moveGroup(faceParticles, faceTargets, 0, 280, 0.02);
-      } else if (progress < 0.42) {
-        moveGroup(textParticles, textTargets, (progress - 0.14) / 0.28, 170, 0.12);
-        moveGroup(faceParticles, faceTargets, 0, 220, 0.025);
-      } else if (progress < 0.66) {
-        moveGroup(textParticles, textTargets, 1, 0, 0.11);
-        moveGroup(faceParticles, faceTargets, 0, 170, 0.04);
-      } else if (progress < 0.92) {
-        moveGroup(textParticles, textTargets, 1, 0, 0.09);
-        moveGroup(faceParticles, faceTargets, (progress - 0.66) / 0.26, 120, 0.11);
-      } else {
-        moveGroup(textParticles, textTargets, 1, 0, 0.075);
-        moveGroup(faceParticles, faceTargets, 1, 0, 0.075);
-      }
+      particles.forEach((particle) => {
+        const delayed = clamp((portraitProgress - particle.delay * 0.22) / 0.78, 0, 1);
+        const eased = skipped ? 1 : easeOutBack(delayed);
+        let targetX = particle.targetX;
+        let targetY = particle.targetY;
+        let nextX = particle.x + (targetX - particle.x) * eased;
+        let nextY = particle.y + (targetY - particle.y) * eased;
+
+        if (skipped || portraitProgress >= 1) {
+          nextX += Math.sin(now * 0.002 + particle.delay * 9) * 0.7;
+          nextY += Math.cos(now * 0.0018 + particle.delay * 7) * 0.7;
+        }
+
+        if (!mobileQuery.matches && pointer.active && (skipped || portraitProgress >= 1)) {
+          const dx = nextX - pointer.x;
+          const dy = nextY - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < 80 && distance > 0.01) {
+            const force = (1 - distance / 80) * 18;
+            targetX = nextX + (dx / distance) * force;
+            targetY = nextY + (dy / distance) * force;
+          }
+        }
+
+        particle.vx += (targetX - particle.x) * 0.08;
+        particle.vy += (targetY - particle.y) * 0.08;
+        particle.vx *= 0.78;
+        particle.vy *= 0.78;
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        context.globalAlpha = particle.alpha * (0.08 + portraitEase * 0.92);
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        context.fill();
+      });
 
       context.globalAlpha = 1;
+      if (fallback) fallback.classList.toggle('is-visible', imageFailed);
 
-      if (progress < 1) {
-        frameId = window.requestAnimationFrame(animate);
-      } else {
-        intro.dataset.state = 'complete';
+      if (!skipped && elapsed >= FINAL_TIME) {
+        skipped = true;
+        hero.dataset.stage = 'final';
       }
-    };
 
-    const start = () => {
-      resize();
-      startedAt = performance.now();
-      if (reduceMotion) {
-        intro.dataset.state = 'complete';
-        return;
-      }
-      intro.dataset.state = 'active';
       frameId = window.requestAnimationFrame(animate);
     };
 
-    image = new Image();
-    image.decoding = 'async';
-    image.onload = start;
-    image.onerror = () => {
-      intro.dataset.state = 'complete';
+    const onPointerMove = (event) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top, active: true };
     };
-    image.src = IMAGE_SRC;
-
-    resize();
-    intro.dataset.state = reduceMotion ? 'complete' : 'loading';
-
+    const onPointerLeave = () => { pointer.active = false; };
     const onResize = () => {
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(resize, 120);
     };
+    const onSkip = () => { if (!skipped) settleInstantly(); };
 
+    image = new Image();
+    image.decoding = 'async';
+    image.onload = () => {
+      imageFailed = false;
+      resize();
+      if (reduceMotion) settleInstantly();
+    };
+    image.onerror = () => {
+      imageFailed = true;
+      resize();
+      settleInstantly();
+    };
+    image.src = IMAGE_SRC;
+
+    resize();
+    hero.dataset.stage = reduceMotion ? 'final' : 'drop';
+    setLettersRevealed();
+    letters.forEach((letter) => { letter.textContent = getRandomChar(); });
+
+    canvas.addEventListener('pointermove', onPointerMove, { passive: true });
+    canvas.addEventListener('pointerleave', onPointerLeave, { passive: true });
     window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('keydown', onSkip, { passive: true });
+    window.addEventListener('scroll', onSkip, { passive: true });
+    window.addEventListener('click', onSkip, { passive: true });
+
+    startedAt = performance.now();
+    frameId = window.requestAnimationFrame(animate);
 
     return () => {
       window.clearTimeout(resizeTimer);
       if (frameId) window.cancelAnimationFrame(frameId);
+      canvas.removeEventListener('pointermove', onPointerMove);
+      canvas.removeEventListener('pointerleave', onPointerLeave);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('keydown', onSkip);
+      window.removeEventListener('scroll', onSkip);
+      window.removeEventListener('click', onSkip);
     };
   }, []);
 
   return (
-    <div className="hero-content">
-      <div ref={introRef} className="portfolio-particle-intro" data-state="loading" aria-hidden="true">
-        <div className="portfolio-particle-glow" />
-        <canvas ref={canvasRef} className="portfolio-particle-canvas" />
-      </div>
+    <div ref={heroRef} className="portfolio-hero-visual" data-stage="drop">
+      <div className="portfolio-particle-glow" aria-hidden="true" />
+      <div className="portfolio-intro-dot" aria-hidden="true" />
+      <canvas ref={canvasRef} className="portfolio-particle-canvas" aria-hidden="true" />
 
-      <div className="hero-main-content">
-        <div className="hero-portrait particle-portrait-shell">
-          <img src="/profile.jpg" alt="Jafar Khandu" loading="eager" decoding="async" />
-          <div className="portrait-orbit" aria-hidden="true" />
-        </div>
+      <h1 ref={headingRef} className="portfolio-heading" aria-label="Portfolio">
+        {'PORTFOLIO'.split('').map((letter, index) => (
+          <span
+            className="portfolio-letter"
+            data-letter={letter}
+            style={{ '--letter-index': index, '--start-rotate': `${(Math.random() * 18 - 9).toFixed(2)}deg` }}
+            key={`${letter}-${index}`}
+          >
+            {letter}
+          </span>
+        ))}
+      </h1>
 
-        <p className="eyebrow"><span /> FULL-STACK SOFTWARE DEVELOPER · PUNE</p>
-        <h1 className="hero-title">I build web products<br /><em>that feel considered.</em></h1>
-        <p className="hero-subtitle">Reliable backend systems, responsive interfaces and real-time experiences — built<br className="desktop-break" /> from idea to production.</p>
-        <div className="hero-actions">
-          <a className="pill-button filled" href="#work">View work <ArrowUpRight size={17} /></a>
-          <a className="text-button" href="#about">About me <ArrowUpRight size={15} /></a>
-          <a className="text-button" href="/resume.html" target="_blank" rel="noreferrer">Download résumé <Download size={15} /></a>
-        </div>
+      <p className="portfolio-tagline">Full-Stack .NET <em>Developer</em></p>
+      <div ref={fallbackRef} className="portfolio-fallback" aria-hidden="true">
+        <img src={FALLBACK_SRC} alt="" loading="eager" decoding="async" />
       </div>
     </div>
   );
