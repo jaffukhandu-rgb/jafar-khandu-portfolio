@@ -1,3 +1,5 @@
+@import './responsive.css';
+
 /* Project scroll-story: the left visual stays anchored while project copy scrolls on the right. */
 
 @media (min-width: 981px) {
