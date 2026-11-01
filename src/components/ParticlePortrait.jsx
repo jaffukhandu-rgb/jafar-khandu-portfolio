@@ -271,7 +271,6 @@ export default function ParticlePortrait() {
 
     resize();
     hero.dataset.stage = reduceMotion ? 'final' : 'drop';
-    setLettersRevealed();
     letters.forEach((letter) => { letter.textContent = getRandomChar(); });
 
     canvas.addEventListener('pointermove', onPointerMove, { passive: true });
