@@ -84,10 +84,9 @@ function App() {
     };
     window.addEventListener('pointermove', onPointerMove, { passive: true });
 
-    const hero = document.querySelector('.hero');
-    const heroInner = document.querySelector('.hero-inner');
-    const heroParallaxItems = document.querySelectorAll('[data-hero-parallax]');
-    const starfield = document.querySelector('.starfield');
+    const parallaxSection = document.querySelector('.intro-section');
+    const parallaxInner = document.querySelector('.intro-section .hero-inner');
+    const parallaxItems = document.querySelectorAll('[data-hero-parallax]');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let rafId = 0;
 
@@ -95,20 +94,20 @@ function App() {
 
     const renderParallax = () => {
       rafId = 0;
-      if (reduceMotion || !hero) return;
+      if (reduceMotion || !parallaxSection) return;
 
-      const heroRect = hero.getBoundingClientRect();
-      const progress = clamp(-heroRect.top / Math.max(heroRect.height * 0.82, 1), 0, 1.15);
-      const heroShift = progress * -52;
-      const heroScale = 1 - progress * 0.055;
-      const heroOpacity = 1 - progress * 0.72;
+      const sectionRect = parallaxSection.getBoundingClientRect();
+      const progress = clamp(-sectionRect.top / Math.max(sectionRect.height * 0.82, 1), 0, 1.15);
+      const shift = progress * -52;
+      const scale = 1 - progress * 0.055;
+      const opacity = 1 - progress * 0.72;
 
-      if (heroInner) {
-        heroInner.style.transform = `translate3d(0, ${heroShift}px, 0) scale(${heroScale})`;
-        heroInner.style.opacity = `${clamp(heroOpacity, 0.18, 1)}`;
+      if (parallaxInner) {
+        parallaxInner.style.transform = `translate3d(0, ${shift}px, 0) scale(${scale})`;
+        parallaxInner.style.opacity = `${clamp(opacity, 0.18, 1)}`;
       }
 
-      heroParallaxItems.forEach((item) => {
+      parallaxItems.forEach((item) => {
         const speed = Number(item.dataset.speed || 1);
         const drift = Number(item.dataset.drift || 0);
         const rotate = Number(item.dataset.rotate || 0);
@@ -116,17 +115,12 @@ function App() {
         const x = Math.sin(progress * Math.PI) * drift;
         const y = depth * -120;
         const rotation = rotate * depth;
-        const scale = 1 - depth * 0.08;
-        const opacity = clamp(1 - depth * 0.7, 0.08, 1);
+        const itemScale = 1 - depth * 0.08;
+        const itemOpacity = clamp(1 - depth * 0.7, 0.08, 1);
 
-        item.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg) scale(${scale})`;
-        item.style.opacity = `${opacity}`;
+        item.style.transform = `translate3d(${x}px, ${y}px, 0) rotate(${rotation}deg) scale(${itemScale})`;
+        item.style.opacity = `${itemOpacity}`;
       });
-
-      if (starfield) {
-        starfield.style.transform = `translate3d(0, ${progress * -36}px, 0) scale(${1 + progress * 0.035})`;
-        starfield.style.opacity = `${clamp(1 - progress * 0.45, 0.45, 1)}`;
-      }
     };
 
     const onScroll = () => {
@@ -176,16 +170,26 @@ function App() {
 
       <main>
         <section id="home" className="hero">
-          <div className="starfield" aria-hidden="true">
-            {Array.from({ length: 38 }).map((_, i) => <span key={i} style={{ '--i': i }} />)}
-          </div>
-
-          <div className="floating-note note-left" data-hero-parallax data-speed="0.72" data-drift="18" data-rotate="-4">Currently building: <b>full-stack systems</b></div>
-          <div className="floating-note note-right" data-hero-parallax data-speed="1.18" data-drift="-24" data-rotate="7">backend · frontend · deployment</div>
-          <div className="floating-note note-bottom" data-hero-parallax data-speed="0.88" data-drift="30" data-rotate="-6">Make it reliable. Then make it beautiful.</div>
-
           <div className="hero-inner container">
             <ParticlePortrait />
+          </div>
+        </section>
+
+        <section id="intro" className="intro-section">
+          <div className="hero-inner container">
+            <div className="hero-portrait particle-portrait-shell">
+              <img src="/profile.jpg" alt="Jafar Khandu" loading="eager" decoding="async" />
+              <div className="portrait-orbit" aria-hidden="true" />
+            </div>
+
+            <p className="eyebrow"><span /> FULL-STACK SOFTWARE DEVELOPER · PUNE</p>
+            <h1 className="hero-title">I build web products<br /><em>that feel considered.</em></h1>
+            <p className="hero-subtitle">Reliable backend systems, responsive interfaces and real-time experiences — built<br className="desktop-break" /> from idea to production.</p>
+            <div className="hero-actions">
+              <a className="pill-button filled" href="#work">View work <ArrowUpRight size={17} /></a>
+              <a className="text-button" href="#about">About me <ArrowUpRight size={15} /></a>
+              <a className="text-button" href="/resume.html" target="_blank" rel="noreferrer">Download résumé <Download size={15} /></a>
+            </div>
           </div>
         </section>
 
