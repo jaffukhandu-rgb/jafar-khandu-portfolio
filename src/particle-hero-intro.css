@@ -31,6 +31,8 @@
 }
 
 .nav-wrap {
+  opacity: 0;
+  animation: portfolio-header-in .8s ease 4.5s forwards;
   background: transparent;
   backdrop-filter: none;
   border-bottom: 0;
@@ -213,7 +215,7 @@
   text-transform: uppercase;
   opacity: 0;
   transform: translateY(12px);
-  animation: portfolio-tagline-in .8s ease 3.9s forwards;
+  animation: portfolio-tagline-in .8s ease 4.5s forwards;
 }
 
 .portfolio-tagline em {
@@ -227,6 +229,10 @@
 
 @keyframes portfolio-tagline-in {
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes portfolio-header-in {
+  to { opacity: 1; }
 }
 
 .portfolio-fallback {
@@ -317,6 +323,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .nav-wrap {
+    animation: none;
+    opacity: 1;
+  }
+
   .portfolio-letter,
   .portfolio-letter.is-revealed,
   .portfolio-letter.is-locked,
