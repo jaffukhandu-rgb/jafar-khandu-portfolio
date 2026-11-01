@@ -6,6 +6,8 @@ import './styles.css';
 import './project-scroll.css';
 import './particle-hero-intro.css';
 
+const baseUrl = import.meta.env.BASE_URL;
+
 const projects = [
   {
     title: 'TaskManagement / CodeQueue',
@@ -13,7 +15,7 @@ const projects = [
     description: 'A structured project and task management platform with authentication, assignment workflows, reviews, payment decisions, real-time communication, notifications and automated deadline reminders.',
     stack: ['ASP.NET Core', 'C#', 'MVC', 'EF Core', 'SQL Server', 'SignalR'],
     link: 'https://codequeue.ciitstudent.com/',
-    image: '/projects/TaskManagement.png',
+    image: `${baseUrl}projects/TaskManagement.png`,
     number: '01'
   },
   {
@@ -22,7 +24,7 @@ const projects = [
     description: 'A real-world interior design business application built around a modern customer experience, content management and cloud-hosted media workflow.',
     stack: ['ASP.NET Core', 'MongoDB', 'Cloudinary', 'C#', 'Nginx'],
     link: 'https://uniqueinteriors.shop/',
-    image: '/projects/Unique.png',
+    image: `${baseUrl}projects/Unique.png`,
     number: '02'
   },
   {
@@ -31,7 +33,7 @@ const projects = [
     description: 'A modern full-stack perfume commerce platform with authentication, payments, media handling, database integration and a responsive product experience.',
     stack: ['Next.js', 'React', 'TypeScript', 'MongoDB', 'Razorpay'],
     link: 'https://perfumewebsite-lt72tgwqm-jk-6157.vercel.app',
-    image: '/projects/melange.png',
+    image: `${baseUrl}projects/melange.png`,
     number: '03'
   }
 ];
@@ -47,7 +49,7 @@ function App() {
   const [open, setOpen] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
   const nav = ['Home', 'About', 'Projects', 'Contact'];
-  const resumeUrl = '/resume.html';
+  const resumeUrl = `${baseUrl}resume.html`;
 
   const go = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -132,7 +134,7 @@ function App() {
               <div className="hero-actions">
                 <a className="pill-button filled" href="#work">View work <ArrowUpRight size={17} /></a>
                 <a className="text-button" href="#about">About me <ArrowUpRight size={15} /></a>
-                <a className="text-button" href="/resume.html" target="_blank" rel="noreferrer">Download résumé <Download size={15} /></a>
+                <a className="text-button" href={resumeUrl} target="_blank" rel="noreferrer">Download résumé <Download size={15} /></a>
               </div>
             </div>
           </div>
