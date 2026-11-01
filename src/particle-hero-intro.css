@@ -118,6 +118,8 @@
   pointer-events: auto;
 }
 
+/* Keep the heading DOM alive because the particle animation uses its letters,
+   but do not show the large PORTFOLIO word in the hero. */
 .portfolio-heading {
   position: absolute;
   z-index: 3;
@@ -133,6 +135,7 @@
   white-space: nowrap;
   overflow: visible;
   pointer-events: none;
+  visibility: hidden;
   font-family: 'DM Sans', sans-serif;
   font-size: clamp(64px, 17vw, 260px);
   font-weight: 900;
