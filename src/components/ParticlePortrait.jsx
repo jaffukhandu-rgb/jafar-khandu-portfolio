@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 
-const IMAGE_SRC = '/profile-cutout.png';
-const FALLBACK_SRC = '/profile.jpg';
+const BASE_URL = import.meta.env.BASE_URL;
+const IMAGE_SRC = `${BASE_URL}profile-cutout.png`;
+const FALLBACK_SRC = `${BASE_URL}profile.jpg`;
 const DESKTOP_GAP = 4;
 const MOBILE_GAP = 6;
 const MAX_DESKTOP_PARTICLES = 14000;
