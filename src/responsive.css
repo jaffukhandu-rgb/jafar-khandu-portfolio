@@ -1,68 +1,55 @@
 /* Responsive and interaction polish. Loaded after the existing styles so the base design remains intact. */
 
-/* Custom cursor: desktop pointer devices only. */
-.cursor-dot,
-.cursor-ring,
-.cursor-aura {
-  position: fixed;
-  left: var(--mx, 50vw);
-  top: var(--my, 50vh);
-  pointer-events: none;
-  z-index: 9999;
-  border-radius: 50%;
-  opacity: 0;
-}
+/* Animated cursor: uses the existing --mx/--my pointer coordinates, so no React/DOM loop is required. */
+@media (pointer: fine) {
+  .site-shell::before,
+  .site-shell::after {
+    content: '';
+    position: fixed;
+    left: var(--mx, 50vw);
+    top: var(--my, 50vh);
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 50%;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
 
-.cursor-dot {
-  width: 6px;
-  height: 6px;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  box-shadow: 0 0 14px rgba(183, 162, 255, .8);
-  transition: width .22s ease, height .22s ease, opacity .2s ease;
-}
+  .site-shell::before {
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(183, 162, 255, .65);
+    background: rgba(183, 162, 255, .045);
+    box-shadow: 0 0 24px rgba(116, 86, 194, .16);
+    transition: left .14s ease-out, top .14s ease-out, width .25s ease, height .25s ease, border-color .25s ease, background .25s ease, opacity .2s ease;
+  }
 
-.cursor-ring {
-  width: 34px;
-  height: 34px;
-  transform: translate(-50%, -50%);
-  border: 1px solid rgba(183, 162, 255, .65);
-  background: rgba(183, 162, 255, .045);
-  box-shadow: 0 0 24px rgba(116, 86, 194, .16);
-  transition: left .14s ease-out, top .14s ease-out, width .25s ease, height .25s ease, border-color .25s ease, background .25s ease, opacity .2s ease;
-}
+  .site-shell::after {
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    box-shadow: 0 0 14px rgba(183, 162, 255, .8), 0 0 36px rgba(116, 86, 194, .22);
+    transition: width .22s ease, height .22s ease, opacity .2s ease;
+  }
 
-.cursor-aura {
-  width: 76px;
-  height: 76px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(183, 162, 255, .08), transparent 68%);
-  filter: blur(3px);
-  transition: left .32s ease-out, top .32s ease-out, opacity .2s ease;
-}
+  .site-shell:hover::before,
+  .site-shell:hover::after {
+    opacity: 1;
+  }
 
-.cursor-ready .cursor-dot,
-.cursor-ready .cursor-ring,
-.cursor-ready .cursor-aura {
-  opacity: 1;
-}
+  @supports selector(:has(*)) {
+    .site-shell:has(a:hover, button:hover, [role='button']:hover)::before {
+      width: 52px;
+      height: 52px;
+      border-color: rgba(183, 162, 255, .92);
+      background: rgba(183, 162, 255, .08);
+    }
 
-.cursor-hover .cursor-dot {
-  width: 9px;
-  height: 9px;
-}
-
-.cursor-hover .cursor-ring {
-  width: 52px;
-  height: 52px;
-  border-color: rgba(183, 162, 255, .9);
-  background: rgba(183, 162, 255, .08);
-}
-
-.cursor-hover .cursor-aura {
-  width: 94px;
-  height: 94px;
-  opacity: .8;
+    .site-shell:has(a:hover, button:hover, [role='button']:hover)::after {
+      width: 9px;
+      height: 9px;
+    }
+  }
 }
 
 /* Tablet. */
@@ -395,19 +382,13 @@
   }
 }
 
-@media (pointer: coarse), (prefers-reduced-motion: reduce) {
-  .cursor-dot,
-  .cursor-ring,
-  .cursor-aura {
+@media (prefers-reduced-motion: reduce) {
+  .site-shell::before,
+  .site-shell::after {
     display: none !important;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .nav-links,
-  .cursor-dot,
-  .cursor-ring,
-  .cursor-aura {
+  .nav-links {
     transition: none !important;
   }
 }
