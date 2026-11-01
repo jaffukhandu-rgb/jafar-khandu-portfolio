@@ -13,6 +13,7 @@ const projects = [
     description: 'A structured project and task management platform with authentication, assignment workflows, reviews, payment decisions, real-time communication, notifications and automated deadline reminders.',
     stack: ['ASP.NET Core', 'C#', 'MVC', 'EF Core', 'SQL Server', 'SignalR'],
     link: 'https://codequeue.ciitstudent.com/',
+    image: '/projects/TaskManagement.png',
     number: '01'
   },
   {
@@ -21,6 +22,7 @@ const projects = [
     description: 'A real-world interior design business application built around a modern customer experience, content management and cloud-hosted media workflow.',
     stack: ['ASP.NET Core', 'MongoDB', 'Cloudinary', 'C#', 'Nginx'],
     link: 'https://uniqueinteriors.shop/',
+    image: '/projects/Unique.png',
     number: '02'
   },
   {
@@ -29,6 +31,7 @@ const projects = [
     description: 'A modern full-stack perfume commerce platform with authentication, payments, media handling, database integration and a responsive product experience.',
     stack: ['Next.js', 'React', 'TypeScript', 'MongoDB', 'Razorpay'],
     link: 'https://perfumewebsite-lt72tgwqm-jk-6157.vercel.app',
+    image: '/projects/melange.png',
     number: '03'
   }
 ];
@@ -148,13 +151,17 @@ function App() {
             <div className="project-stage-wrap">
               <div className="project-stage" aria-live="polite">
                 <div className="project-stage-inner">
-                  <div className="visual-grid" />
-                  <div className="visual-window">
-                    <span className="window-dot" /><span className="window-dot" /><span className="window-dot" />
-                    <div className="window-lines"><i /><i /><i /><i /></div>
-                    <strong>{active.number}</strong>
-                  </div>
+                  <img
+                    key={active.image}
+                    className="project-image"
+                    src={active.image}
+                    alt={`${active.title} project preview`}
+                    loading="eager"
+                    decoding="async"
+                  />
+                  <div className="project-image-overlay" aria-hidden="true" />
                   <span className="visual-label">{active.category}</span>
+                  <strong className="project-number">{active.number}</strong>
                 </div>
               </div>
             </div>
